@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>B站视频下载器</title>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <!-- 自定义样式 -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <div class="logo">
+                <i class="fab fa-bilibili"></i>
+                <h1>B站视频下载器</h1>
+            </div>
+            <p class="subtitle">高清视频 · 高质量音频 · 简单易用</p>
+        </header>
+
+        <main class="main-content">
+            <!-- 重要提示 -->
+            <div class="alert alert-warning">
+                <div class="alert-icon">⚠️</div>
+                <div class="alert-content">
+                    <h3>首次使用必读</h3>
+                    <p><strong>下载视频前必须先设置Cookie！</strong>否则会出现 "HTTP Error 412" 错误。</p>
+                    <p>👉 请按照下方"账户信息"区域的步骤获取并保存Cookie。</p>
+                    <p>📖 详细教程请查看：<strong>B站下载器使用说明.md</strong></p>
+                </div>
+            </div>
+
+            <!-- 登录信息区域 -->
+            <div class="card auth-section">
+                <h2><i class="fas fa-user-circle"></i> 账户信息</h2>
+                <div class="cookie-input-section">
+                    <div class="cookie-method-tabs">
+                        <button type="button" class="tab-btn active" data-method="simple">简单模式</button>
+                        <button type="button" class="tab-btn" data-method="advanced">高级模式</button>
+                    </div>
+                    
+                    <!-- 简单模式 -->
+                    <div id="simple-mode" class="cookie-input-mode active">
+                        <div class="form-group">
+                            <label>重要Cookie值 (从开发者工具中获取):</label>
+                            <div class="cookie-fields">
+                                <div class="cookie-field">
+                                    <label for="sessdata">SESSDATA:</label>
+                                    <input type="text" id="sessdata" placeholder="从Cookie中找到SESSDATA的值">
+                                </div>
+                                <div class="cookie-field">
+                                    <label for="bili_jct">bili_jct:</label>
+                                    <input type="text" id="bili_jct" placeholder="从Cookie中找到bili_jct的值">
+                                </div>
+                                <div class="cookie-field">
+                                    <label for="buvid3">buvid3:</label>
+                                    <input type="text" id="buvid3" placeholder="从Cookie中找到buvid3的值">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="cookie-guide">
+                            <h4><i class="fas fa-lightbulb"></i> 获取步骤：</h4>
+                            <ol>
+                                <li>在B站登录后，按<kbd>F12</kbd>打开开发者工具</li>
+                                <li>切换到<strong>Application</strong>标签页</li>
+                                <li>左侧选择<strong>Storage → Cookies → https://www.bilibili.com</strong></li>
+                                <li>找到并复制以下Cookie的<strong>Value值</strong>：
+                                    <ul>
+                                        <li><code>SESSDATA</code> - 用户会话标识</li>
+                                        <li><code>bili_jct</code> - 防跨站请求伪造令牌</li>
+                                        <li><code>buvid3</code> - 浏览器唯一标识</li>
+                                    </ul>
+                                </li>
+                                <li>将对应的Value值粘贴到上方输入框中</li>
+                            </ol>
+                        </div>
+                    </div>
+                    
+                    <!-- 高级模式 -->
+                    <div id="advanced-mode" class="cookie-input-mode">
+                        <div class="form-group">
+                            <label for="cookies">Cookie数据输入:</label>
+                            <textarea id="cookies" placeholder="支持多种格式：\n1. 标准格式：SESSDATA=xxx; bili_jct=xxx; buvid3=xxx;\n2. 开发者工具格式：直接复制Cookie表格数据" rows="4"></textarea>
+                            <div class="cookie-actions">
+                                <button type="button" id="parse-cookies-btn" class="btn btn-secondary">
+                                    <i class="fas fa-magic"></i> 智能解析
+                                </button>
+                                <small class="help-text">
+                                    <i class="fas fa-info-circle"></i>
+                                    支持从开发者工具直接复制Cookie表格数据，系统会自动识别并转换格式
+                                </small>
+                            </div>
+                        </div>
+                        
+                        <!-- Cookie解析预览区域 -->
+                        <div id="cookie-preview" class="cookie-preview" style="display: none;">
+                            <h4><i class="fas fa-eye"></i> 解析预览</h4>
+                            <div class="preview-content">
+                                <div class="preview-item">
+                                    <strong>识别到的关键Cookie:</strong>
+                                    <div id="parsed-cookies-display" class="parsed-cookies"></div>
+                                </div>
+                                <div class="preview-item">
+                                    <strong>生成的Cookie字符串:</strong>
+                                    <div id="generated-cookie-string" class="generated-string"></div>
+                                </div>
+                            </div>
+                            <div class="preview-actions">
+                                <button type="button" id="confirm-cookies-btn" class="btn btn-primary">
+                                    <i class="fas fa-check"></i> 确认使用
+                                </button>
+                                <button type="button" id="cancel-cookies-btn" class="btn btn-secondary">
+                                    <i class="fas fa-times"></i> 重新输入
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 视频下载区域 -->
+            <div class="card download-section">
+                <h2><i class="fas fa-download"></i> 视频下载</h2>
+                <div class="form-group">
+                    <label for="video-url">视频URL:</label>
+                    <div class="input-group">
+                        <input type="url" id="video-url" placeholder="请输入B站视频链接..." required>
+                        <button id="get-info-btn" class="btn btn-secondary">
+                            <i class="fas fa-search"></i> 获取信息
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 视频信息显示 -->
+                <div id="video-info" class="video-info" style="display: none;">
+                    <div class="info-card">
+                        <h3 id="video-title"></h3>
+                        <div class="video-meta">
+                            <span id="video-uploader"></span>
+                            <span id="video-duration"></span>
+                            <span id="video-views"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 质量选择 -->
+                <div class="quality-section" style="display: none;">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="video-quality">视频质量:</label>
+                            <select id="video-quality">
+                                <option value="best">最高质量</option>
+                                <option value="worst">最低质量</option>
+                                <option value="720p">720P</option>
+                                <option value="1080p">1080P</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="audio-quality">音频质量:</label>
+                            <select id="audio-quality">
+                                <option value="best">最高质量</option>
+                                <option value="worst">最低质量</option>
+                            </select>
+                        </div>
+                    </div>
+                    <button id="download-btn" class="btn btn-primary" onclick="downloadVideo()">
+                        <i class="fas fa-download"></i> 开始下载
+                    </button>
+                </div>
+            </div>
+
+            <!-- 下载进度区域 -->
+            <div id="download-progress" class="card progress-section" style="display: none;">
+                <h2><i class="fas fa-tasks"></i> 下载进度</h2>
+                <div class="progress-item">
+                    <div class="progress-info">
+                        <span id="progress-filename">准备中...</span>
+                        <span id="progress-percent">0%</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div id="progress-fill" class="progress-fill"></div>
+                    </div>
+                    <div class="progress-details">
+                        <span id="progress-speed"></span>
+                        <span id="progress-eta"></span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 已下载文件列表 -->
+            <div class="card files-section">
+                <div class="files-header">
+                    <h2><i class="fas fa-folder-open"></i> 已下载文件</h2>
+                    <div class="files-controls">
+                        <div class="search-box">
+                            <i class="fas fa-search"></i>
+                            <input type="text" id="file-search" placeholder="搜索文件名..." autocomplete="off">
+                            <button id="clear-search" class="clear-btn" style="display: none;">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                        <button id="refresh-files-btn" class="btn btn-secondary">
+                            <i class="fas fa-sync-alt"></i> 刷新
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="files-stats">
+                    <span id="files-count">共 0 个文件</span>
+                    <span id="search-results" style="display: none;">找到 0 个匹配结果</span>
+                </div>
+                
+                <div id="files-list" class="files-list">
+                    <p class="no-files">暂无下载文件</p>
+                </div>
+                
+                <div id="pagination" class="pagination" style="display: none;">
+                    <button id="prev-page" class="page-btn" disabled>
+                        <i class="fas fa-chevron-left"></i> 上一页
+                    </button>
+                    <div class="page-info">
+                        <span id="page-numbers"></span>
+                        <select id="page-size">
+                            <option value="10">每页 10 项</option>
+                            <option value="20" selected>每页 20 项</option>
+                            <option value="50">每页 50 项</option>
+                        </select>
+                    </div>
+                    <button id="next-page" class="page-btn" disabled>
+                        下一页 <i class="fas fa-chevron-right"></i>
+                    </button>
+                </div>
+            </div>
+        </main>
+
+        <footer class="footer">
+            <p>&copy; 2024 B站视频下载器 - 仅供学习交流使用</p>
+        </footer>
+    </div>
+
+    <!-- 加载提示 -->
+    <div id="loading" class="loading" style="display: none;">
+        <div class="loading-spinner"></div>
+        <p>处理中...</p>
+    </div>
+
+    <!-- 消息提示 -->
+    <div id="message" class="message" style="display: none;"></div>
+
+    <!-- 分类选择模态框 -->
+    <div id="categoryModal" class="category-modal" style="display: none;">
+        <div class="category-modal-overlay"></div>
+        <div class="category-modal-content">
+            <div class="category-modal-header">
+                <h3>🎵 选择音乐分类</h3>
+                <p class="category-modal-subtitle">请选择将文件保存到哪个音乐文件夹</p>
+            </div>
+            <div class="category-modal-body">
+                <div class="file-info">
+                    <div class="file-icon">📁</div>
+                    <div class="file-details">
+                        <div class="file-name" id="categoryFileName">文件名.mp4</div>
+                        <div class="file-size" id="categoryFileSize">大小: 0 MB</div>
+                    </div>
+                </div>
+                <div class="category-buttons">
+                    <button class="category-btn study-btn" onclick="moveToCategory('study')">
+                        <div class="btn-icon">📚</div>
+                        <div class="btn-text">
+                            <div class="btn-title">学习音乐</div>
+                            <div class="btn-desc">专注学习时播放</div>
+                        </div>
+                    </button>
+                    <button class="category-btn rest-btn" onclick="moveToCategory('rest')">
+                        <div class="btn-icon">🌸</div>
+                        <div class="btn-text">
+                            <div class="btn-title">休息音乐</div>
+                            <div class="btn-desc">放松休息时播放</div>
+                        </div>
+                    </button>
+                </div>
+                <button class="category-skip-btn" onclick="skipCategorySelection()">
+                    ⏭️ 跳过，稍后手动移动
+                </button>
+            </div>
+            <div class="category-modal-footer">
+                <small>💡 提示：文件将自动移动到对应文件夹并更新音乐列表</small>
+            </div>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    <script>
+        // 全局变量存储当前下载的文件信息
+        let currentDownloadedFile = {
+            filename: '',
+            size: 0
+        };
+
+        // 显示分类选择模态框
+        function showCategorySelection(filename, size) {
+            currentDownloadedFile = { filename, size };
+            
+            // 更新文件信息显示
+            document.getElementById('categoryFileName').textContent = filename;
+            document.getElementById('categoryFileSize').textContent = `大小: ${(size / (1024 * 1024)).toFixed(2)} MB`;
+            
+            // 显示模态框
+            document.getElementById('categoryModal').style.display = 'flex';
+        }
+
+        // 移动文件到指定分类
+        async function moveToCategory(category) {
+            const modal = document.getElementById('categoryModal');
+            const categoryName = category === 'study' ? '学习' : '休息';
+            
+            try {
+                // 显示加载状态
+                showMessage('正在移动文件...', 'info');
+                
+                // 调用移动文件API
+                const moveResponse = await fetch('/api/move_file', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        filename: currentDownloadedFile.filename,
+                        category: category
+                    })
+                });
+                
+                const moveResult = await moveResponse.json();
+                
+                if (!moveResult.success) {
+                    throw new Error(moveResult.error);
+                }
+                
+                showMessage(`✅ 文件已移动到${categoryName}音乐文件夹`, 'success');
+                
+                // 触发音乐列表生成
+                showMessage('正在更新音乐列表...', 'info');
+                
+                const generateResponse = await fetch('/api/trigger_music_list_generation', {
+                    method: 'POST'
+                });
+                
+                const generateResult = await generateResponse.json();
+                
+                if (generateResult.success) {
+                    showMessage('✅ 音乐列表已更新！', 'success');
+                    
+                    // 通知主应用刷新音乐列表
+                    if (window.parent !== window) {
+                        window.parent.postMessage({
+                            type: 'music_updated',
+                            category: category,
+                            filename: moveResult.filename
+                        }, '*');
+                    }
+                    
+                    // 延迟关闭模态框并刷新文件列表
+                    setTimeout(() => {
+                        modal.style.display = 'none';
+                        loadFiles(); // 刷新下载文件列表
+                    }, 1500);
+                } else {
+                    showMessage('⚠️ 文件已移动，但音乐列表更新失败: ' + generateResult.error, 'warning');
+                    setTimeout(() => {
+                        modal.style.display = 'none';
+                        loadFiles();
+                    }, 2000);
+                }
+                
+            } catch (error) {
+                showMessage('❌ 操作失败: ' + error.message, 'error');
+                console.error('移动文件失败:', error);
+            }
+        }
+
+        // 跳过分类选择
+        function skipCategorySelection() {
+            document.getElementById('categoryModal').style.display = 'none';
+            showMessage('💡 文件保存在 downloads 文件夹，请稍后手动移动', 'info');
+        }
+
+        // 在下载完成时自动显示分类选择（需要在 main.js 中调用）
+        window.onDownloadComplete = function(filename, size) {
+            showCategorySelection(filename, size);
+        };
+    </script>
+</body>
+</html>

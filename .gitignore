@@ -1,0 +1,174 @@
+# ================================
+# Git 忽略文件配置
+# ================================
+
+# ================================
+# 音乐和视频文件（太大，不上传）
+# ================================
+music/
+*.mp3
+*.mp4
+*.m4a
+*.wav
+*.ogg
+*.flac
+*.aac
+
+# 但保留示例音乐列表配置
+!music-list.json
+
+# ================================
+# Node.js 相关
+# ================================
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+package-lock.json
+yarn.lock
+
+# ================================
+# Python 相关
+# ================================
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+venv/
+env/
+ENV/
+
+# ================================
+# B站下载器相关（本地工具）
+# ================================
+爬取B站原视频/downloads/
+爬取B站原视频/__pycache__/
+爬取B站原视频/*.zip
+爬取B站原视频/ffmpeg-master-latest-win64-gpl/
+
+# ================================
+# 操作系统相关
+# ================================
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+*.lnk
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon
+._*
+.Spotlight-V100
+.Trashes
+
+# Linux
+*~
+.directory
+
+# ================================
+# 编辑器和IDE
+# ================================
+# VSCode
+.vscode/
+*.code-workspace
+
+# JetBrains
+.idea/
+*.iml
+*.iws
+*.ipr
+
+# Sublime Text
+*.sublime-project
+*.sublime-workspace
+
+# ================================
+# 临时文件
+# ================================
+*.log
+*.tmp
+*.temp
+*.bak
+*.swp
+*.swo
+*~
+
+# ================================
+# 部署和构建相关
+# ================================
+.cache/
+.vercel/
+.netlify/
+
+# ================================
+# 用户配置和私密信息
+# ================================
+.env
+.env.local
+.env.*.local
+config.local.js
+
+# ================================
+# 大文件和资源
+# ================================
+# 保留小的示例图片，但忽略大的资源
+*.psd
+*.ai
+*.sketch
+
+# ================================
+# 测试和文档
+# ================================
+coverage/
+.nyc_output/
+test-results/
+
+# ================================
+# 保留的文件（明确不忽略）
+# ================================
+# PWA 图标
+!assets/icon-192.png
+!assets/icon-512.png
+
+# 示例图片（用于生成图标）
+!assets/1.jpg
+!assets/2.jpg
+
+# 配置文件
+!manifest.json
+!sw.js
+
+# 文档和说明
+!*.md
+!README.md
+
+# 核心代码
+!*.html
+!*.css
+!*.js
+!*.json
+
+# 音效说明文件
+!assets/audio/README.md
+!assets/fonts/README.md
+
