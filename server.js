@@ -31,6 +31,13 @@ const server = http.createServer((req, res) => {
     const parsedUrl = url.parse(req.url);
     let pathname = parsedUrl.pathname;
     
+    // 解码 URL（处理中文路径）
+    try {
+        pathname = decodeURIComponent(pathname);
+    } catch (e) {
+        console.error('URL decode error:', e);
+    }
+    
     // 默认首页
     if (pathname === '/') {
         pathname = '/index.html';
@@ -44,8 +51,8 @@ const server = http.createServer((req, res) => {
     const contentType = MIME_TYPES[ext] || 'application/octet-stream';
     
     // 检查文件是否存在
-    fs.access(filePath, fs.constants.F_OK, (err) => {
-        if (err) {
+    fs.stat(filePath, (err, stats) => {
+        if (err || !stats.isFile()) {
             // 文件不存在，返回 404
             res.writeHead(404, { 'Content-Type': 'text/html; charset=utf-8' });
             res.end(`
@@ -69,34 +76,60 @@ const server = http.createServer((req, res) => {
             return;
         }
         
-        // 读取文件
-        fs.readFile(filePath, (err, data) => {
-            if (err) {
-                res.writeHead(500, { 'Content-Type': 'text/html; charset=utf-8' });
-                res.end('服务器错误');
-                return;
-            }
+        const fileSize = stats.size;
+        const range = req.headers.range;
+        
+        // 处理 Range 请求（用于视频拖动）
+        if (range) {
+            const parts = range.replace(/bytes=/, "").split("-");
+            const start = parseInt(parts[0], 10);
+            const end = parts[1] ? parseInt(parts[1], 10) : fileSize - 1;
+            const chunksize = (end - start) + 1;
             
-            // 设置 CORS 头，允许跨域请求
-            res.writeHead(200, {
-                'Content-Type': contentType + (contentType.includes('text') || contentType.includes('json') ? '; charset=utf-8' : ''),
+            // 创建读取流
+            const file = fs.createReadStream(filePath, { start, end });
+            
+            // 发送 206 Partial Content
+            const headers = {
+                'Content-Range': `bytes ${start}-${end}/${fileSize}`,
+                'Accept-Ranges': 'bytes',
+                'Content-Length': chunksize,
+                'Content-Type': contentType,
                 'Access-Control-Allow-Origin': '*',
-                'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
-                'Access-Control-Allow-Headers': 'Content-Type'
-            });
+                'Access-Control-Allow-Methods': 'GET, HEAD, OPTIONS',
+                'Access-Control-Allow-Headers': 'Range'
+            };
             
-            res.end(data);
-        });
+            res.writeHead(206, headers);
+            file.pipe(res);
+        } else {
+            // 正常请求，返回完整文件
+            const headers = {
+                'Content-Length': fileSize,
+                'Content-Type': contentType + (contentType.includes('text') || contentType.includes('json') ? '; charset=utf-8' : ''),
+                'Accept-Ranges': 'bytes',
+                'Access-Control-Allow-Origin': '*',
+                'Access-Control-Allow-Methods': 'GET, HEAD, OPTIONS',
+                'Access-Control-Allow-Headers': 'Range'
+            };
+            
+            res.writeHead(200, headers);
+            fs.createReadStream(filePath).pipe(res);
+        }
     });
 });
 
-server.listen(PORT, () => {
+server.listen(PORT, '0.0.0.0', () => {
     console.log('========================================');
     console.log('🚀 倒计时氛围感应用服务器已启动');
     console.log('========================================');
     console.log('');
     console.log(`📝 请在浏览器访问：`);
     console.log(`   http://localhost:${PORT}`);
+    console.log(`   http://127.0.0.1:${PORT}`);
+    console.log('');
+    console.log('✅ 支持视频拖动（HTTP Range 请求）');
+    console.log('✅ 支持所有浏览器（Chrome、Firefox、Edge等）');
     console.log('');
     console.log('💡 提示：按 Ctrl+C 停止服务器');
     console.log('');

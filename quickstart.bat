@@ -1,74 +1,96 @@
 @echo off
-chcp 65001 >nul
-title 倒计时氛围感 - 一键启动
+title Countdown App - Quick Start
 
-REM 获取脚本所在目录（项目根目录）
-set "PROJECT_DIR=%~dp0"
-cd /d "%PROJECT_DIR%"
+cd /d "%~dp0"
 
 echo.
 echo ========================================
-echo      倒计时氛围感 - 一键启动
+echo      Countdown App - Starting
 echo ========================================
 echo.
-echo 📂 项目目录：%PROJECT_DIR%
-echo.
 
-REM 检查 Python
+REM Check Node.js first (better compatibility)
+node --version >nul 2>&1
+if %errorlevel%==0 (
+    echo Node.js detected - will use Node.js server
+    goto check_port
+)
+
+REM Check Python as fallback
 python --version >nul 2>&1
-if errorlevel 1 (
-    echo ❌ 未检测到 Python
+if not %errorlevel%==0 (
+    echo Neither Node.js nor Python found
     echo.
-    echo 请先安装 Python：https://www.python.org/downloads/
-    echo 或者使用 Node.js 版本（需要安装 Node.js）
+    echo Please install one of:
+    echo   Node.js: https://nodejs.org/ (Recommended)
+    echo   Python: https://www.python.org/downloads/
     echo.
     pause
     exit /b 1
 )
 
-echo ✅ Python 已就绪
+echo Python detected - will use Python server
+echo Note: For better browser compatibility, install Node.js
 echo.
 
-REM 检查端口 8000 是否被占用
+:check_port
+
+REM Check port 8000 (skip if already checked)
+:check_port_start
 netstat -ano | findstr ":8000" >nul 2>&1
-if not errorlevel 1 (
-    echo ⚠️  端口 8000 已被占用
-    echo.
-    set /p KILL_PORT="是否关闭占用端口的程序？(Y/N): "
-    if /i "%KILL_PORT%"=="Y" (
-        for /f "tokens=5" %%a in ('netstat -ano ^| findstr ":8000"') do (
-            taskkill /F /PID %%a >nul 2>&1
-        )
-        echo ✅ 已关闭占用端口的程序
-        timeout /t 2 /nobreak >nul
-    )
+if %errorlevel%==0 (
+    echo Port 8000 is in use, closing...
+    for /f "tokens=5" %%a in ('netstat -ano ^| findstr ":8000"') do taskkill /F /PID %%a >nul 2>&1
+    timeout /t 1 /nobreak >nul
 )
 
-echo 🚀 正在启动服务器...
-echo.
-echo ========================================
-echo ✅ 服务器启动成功！
-echo ========================================
-echo.
-echo 📱 访问地址：http://localhost:8000
-echo.
-echo 💡 提示：
-echo    - 浏览器会自动打开应用
-echo    - 关闭此窗口将停止服务器
-echo    - 按 Ctrl+C 可以停止服务器
-echo.
-echo ========================================
+echo Starting server...
 echo.
 
-REM 等待1秒后打开浏览器
+REM Open browser
 timeout /t 1 /nobreak >nul
 start http://localhost:8000
 
-REM 启动服务器
+REM Check Node.js
+node --version >nul 2>&1
+if %errorlevel%==0 (
+    if exist "%~dp0server.js" (
+        echo Using Node.js server (supports video seeking)
+        echo.
+        echo ========================================
+        echo Server started successfully
+        echo ========================================
+        echo.
+        echo URL: http://localhost:8000
+        echo.
+        echo Press Ctrl+C to stop
+        echo.
+        echo ========================================
+        echo.
+        node server.js
+        goto end
+    )
+)
+
+REM Use Python server
+echo Using Python server
+echo.
+echo ========================================
+echo Server started successfully
+echo ========================================
+echo.
+echo URL: http://localhost:8000
+echo.
+echo Press Ctrl+C to stop
+echo.
+echo Note: Python server does not support video seeking
+echo       Install Node.js for full features
+echo.
+echo ========================================
+echo.
 python -m http.server 8000
 
-REM 服务器停止后的提示
+:end
 echo.
-echo ⚠️  服务器已停止
+echo Server stopped
 pause
-

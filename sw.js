@@ -2,8 +2,8 @@
 // Service Worker - 离线支持和缓存管理
 // ================================
 
-const CACHE_NAME = 'countdown-app-v1.0.0';
-const RUNTIME_CACHE = 'countdown-runtime';
+const CACHE_NAME = 'countdown-app-v1.2.2';
+const RUNTIME_CACHE = 'countdown-runtime-v1.2.2';
 
 // 需要缓存的核心文件（立即缓存）
 const CORE_ASSETS = [
@@ -115,9 +115,14 @@ self.addEventListener('fetch', (event) => {
   // 缓存策略选择
   // ================================
   
-  // 对于音乐和视频文件：网络优先，失败时使用缓存
+  // 对于音乐和视频文件：直接从网络获取，不缓存
   if (url.pathname.includes('/music/')) {
-    event.respondWith(networkFirstStrategy(request));
+    event.respondWith(
+      fetch(request).catch(error => {
+        console.error('[SW] 音乐文件加载失败:', request.url, error);
+        return new Response('音乐文件加载失败', { status: 404 });
+      })
+    );
     return;
   }
 
