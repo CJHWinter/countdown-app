@@ -91,11 +91,11 @@ REM ================================
 echo [4/5] 安装 B站下载器依赖...
 echo.
 
-if not exist "爬取B站原视频\requirements.txt" (
+if not exist "crawl_videos\requirements.txt" (
     echo ⚠️  找不到 requirements.txt
     echo.
 ) else (
-    cd 爬取B站原视频
+    cd crawl_videos
     echo 📦 安装 Flask, yt-dlp, requests...
     pip install -r requirements.txt --quiet
     if errorlevel 1 (
@@ -113,7 +113,7 @@ REM ================================
 echo [5/5] 检查 FFmpeg...
 echo.
 
-if exist "爬取B站原视频\ffmpeg-master-latest-win64-gpl\bin\ffmpeg.exe" (
+if exist "crawl_videos\ffmpeg-master-latest-win64-gpl\bin\ffmpeg.exe" (
     echo ✅ FFmpeg 已存在
     echo.
 ) else (
@@ -126,7 +126,7 @@ if exist "爬取B站原视频\ffmpeg-master-latest-win64-gpl\bin\ffmpeg.exe" (
         echo.
         echo 📥 正在下载 FFmpeg...
         echo 这可能需要几分钟，请耐心等待...
-        cd 爬取B站原视频
+        cd crawl_videos
         
         REM 下载 FFmpeg
         curl -L -o ffmpeg.zip "https://github.com/BtbN/FFmpeg-Builds/releases/download/latest/ffmpeg-master-latest-win64-gpl.zip"
@@ -142,7 +142,7 @@ if exist "爬取B站原视频\ffmpeg-master-latest-win64-gpl\bin\ffmpeg.exe" (
             echo 请手动下载：
             echo    https://github.com/BtbN/FFmpeg-Builds/releases
             echo    下载 ffmpeg-master-latest-win64-gpl.zip
-            echo    解压到 爬取B站原视频\ 目录
+            echo    解压到 crawl_videos\ 目录
         )
         cd ..
     ) else (
@@ -152,7 +152,7 @@ if exist "爬取B站原视频\ffmpeg-master-latest-win64-gpl\bin\ffmpeg.exe" (
         echo 如需使用 B站下载器，请手动下载 FFmpeg：
         echo    1. 访问：https://github.com/BtbN/FFmpeg-Builds/releases
         echo    2. 下载：ffmpeg-master-latest-win64-gpl.zip
-        echo    3. 解压到 爬取B站原视频\ 目录
+        echo    3. 解压到 crawl_videos\ 目录
     )
 )
 echo.
@@ -168,11 +168,11 @@ echo ✅ 已安装的功能：
 echo    - Python 核心环境
 echo    - Pillow (图标生成)
 
-if exist "爬取B站原视频\requirements.txt" (
+if exist "crawl_videos\requirements.txt" (
     echo    - Flask/yt-dlp (B站下载器)
 )
 
-if exist "爬取B站原视频\ffmpeg-master-latest-win64-gpl\bin\ffmpeg.exe" (
+if exist "crawl_videos\ffmpeg-master-latest-win64-gpl\bin\ffmpeg.exe" (
     echo    - FFmpeg (视频处理)
 )
 

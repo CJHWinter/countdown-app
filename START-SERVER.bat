@@ -28,7 +28,7 @@ echo.
 
 REM Check Flask
 echo [2/4] Checking Flask dependencies...
-cd /d "%PROJECT_DIR%爬取B站原视频"
+cd /d "%PROJECT_DIR%crawl_videos"
 python -c "import flask" >nul 2>&1
 if %errorlevel% neq 0 (
     echo [INFO] Installing Flask...
@@ -37,7 +37,7 @@ if %errorlevel% neq 0 (
         echo [ERROR] Failed to install dependencies
         echo.
         echo Please run manually:
-        echo    cd 爬取B站原视频
+        echo    cd crawl_videos
         echo    pip install -r requirements.txt
         echo.
         cd /d "%PROJECT_DIR%"
@@ -53,7 +53,7 @@ echo.
 
 REM Start Flask backend
 echo [3/4] Starting Bilibili Downloader Backend (Port 5000)...
-start "Bilibili-Backend" cmd /k "cd /d "%PROJECT_DIR%爬取B站原视频" && python app.py"
+start "Bilibili-Backend" cmd /k "cd /d "%PROJECT_DIR%crawl_videos" && python app.py"
 timeout /t 3 /nobreak >nul
 echo [OK] Backend started
 echo.

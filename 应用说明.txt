@@ -291,7 +291,7 @@ PWA 只能播放：
 部署方式：
 - GitHub Pages（免费）
 - 不包含 music/ 文件夹
-- 不包含 爬取B站原视频/ 文件夹
+- 不包含 crawl_videos/ 文件夹
 ```
 
 ---
@@ -334,7 +334,7 @@ iOS：
 │   ├── index.html（完整版）
 │   ├── app.js（完整功能）
 │   ├── music/（本地音乐）
-│   ├── 爬取B站原视频/（Flask后端）
+│   ├── crawl_videos/（Flask后端）
 │   ├── server.js（Node服务器）
 │   └── 启动服务器.bat
 │
@@ -453,7 +453,7 @@ checkDownloaderService() {
     ├── index.html（完整版）
     ├── app.js（完整功能）
     ├── music/
-    ├── 爬取B站原视频/
+    ├── crawl_videos/
     └── server.js
 ```
 

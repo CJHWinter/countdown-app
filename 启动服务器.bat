@@ -26,7 +26,7 @@ echo.
 
 REM 检查并安装依赖
 echo 📦 检查依赖...
-cd /d "%PROJECT_DIR%爬取B站原视频"
+cd /d "%PROJECT_DIR%crawl_videos"
 python -c "import flask" >nul 2>&1
 if %errorlevel% neq 0 (
     echo ⚠️  Flask 未安装，正在自动安装依赖...
@@ -61,7 +61,7 @@ echo.
 
 REM 启动 Flask 后端（B站下载器）- 在新窗口中
 echo [1/2] 启动 B站下载器后端 (端口 5000)...
-start "Bilibili-Downloader-Backend" cmd /k "title Bilibili-Downloader && cd /d "%PROJECT_DIR%爬取B站原视频" && python app.py"
+start "Bilibili-Downloader-Backend" cmd /k "title Bilibili-Downloader && cd /d "%PROJECT_DIR%crawl_videos" && python app.py"
 
 REM 等待 Flask 启动
 timeout /t 3 /nobreak >nul

@@ -107,7 +107,7 @@ cd countdown-app
 ```bash
 # 安装 Python 依赖
 pip install pillow
-cd 爬取B站原视频
+cd crawl_videos
 pip install -r requirements.txt
 cd ..
 ```
@@ -409,7 +409,7 @@ http://你的电脑IP:8000
 │           └── *.mp3
 │
 ├── 🎬 B站下载器（可选功能）
-│   └── 爬取B站原视频/
+│   └── crawl_videos/
 │       ├── app.py             # Flask后端
 │       ├── requirements.txt   # Python依赖
 │       ├── templates/         # HTML模板
@@ -440,7 +440,7 @@ http://你的电脑IP:8000
 
 #### 可选文件
 - 🎵 `music/` - 本地音乐文件（可选）
-- 🎬 `爬取B站原视频/` - B站下载器（可选）
+- 🎬 `crawl_videos/` - B站下载器（可选）
 - 📚 各种文档 - 帮助理解和使用
 
 ## 🎮 使用指南

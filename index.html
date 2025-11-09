@@ -649,7 +649,14 @@
     <div class="video-player-modal hidden" id="videoPlayerModal">
         <div class="video-player-container">
             <div class="video-player-header">
-                <div class="video-player-title" id="videoPlayerTitle">视频播放</div>
+                <div class="video-player-header-left">
+                    <div class="video-player-title" id="videoPlayerTitle">视频播放</div>
+                    <div class="video-player-info-inline">
+                        <span class="video-player-name" id="videoPlayerName">正在加载...</span>
+                        <span class="video-player-separator">·</span>
+                        <span class="video-player-category" id="videoPlayerCategory">🎵</span>
+                    </div>
+                </div>
                 <div class="video-player-header-controls">
                     <button class="video-player-minimize" id="videoPlayerMinimize" aria-label="最小化视频播放器" title="最小化">
                         <span>−</span>
@@ -663,10 +670,6 @@
                 <video id="videoPlayer" class="video-player-element" controls controlsList="nodownload">
                     您的浏览器不支持视频播放
                 </video>
-                <div class="video-player-info">
-                    <div class="video-player-name" id="videoPlayerName">正在加载...</div>
-                    <div class="video-player-category" id="videoPlayerCategory">🎵</div>
-                </div>
             </div>
             <div class="video-player-controls">
                 <button class="video-control-btn" id="videoPrevBtn" aria-label="上一首" title="上一首">
@@ -675,11 +678,6 @@
                 <button class="video-control-btn" id="videoNextBtn" aria-label="下一首" title="下一首">
                     <span>⏭️</span>
                 </button>
-            </div>
-            <div class="video-player-hint">
-                <small style="color: var(--text-secondary); text-align: center; display: block; margin-top: 8px;">
-                    💡 使用视频下方的原生控制条来播放、暂停、调整进度和全屏
-                </small>
             </div>
         </div>
     </div>

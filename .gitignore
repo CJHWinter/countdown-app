@@ -57,10 +57,10 @@ ENV/
 # ================================
 # B站下载器相关（本地工具）
 # ================================
-爬取B站原视频/downloads/
-爬取B站原视频/__pycache__/
-爬取B站原视频/*.zip
-爬取B站原视频/ffmpeg-master-latest-win64-gpl/
+crawl_videos/downloads/
+crawl_videos/__pycache__/
+crawl_videos/*.zip
+crawl_videos/ffmpeg-master-latest-win64-gpl/
 
 # ================================
 # 操作系统相关

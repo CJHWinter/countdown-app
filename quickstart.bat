@@ -16,11 +16,13 @@ if %errorlevel%==0 (
     echo [2/3] Starting Bilibili Downloader backend...
     
     REM Check if Flask backend exists
-    if exist "%~dp0爬取B站原视频\app.py" (
+    if exist "%~dp0crawl_videos\app.py" (
         REM Start Bilibili downloader in new window
-        start "Bilibili-Downloader-Backend" cmd /k "title Bilibili Downloader Backend ^& cd /d "%~dp0爬取B站原视频" ^& python app.py"
+        cd /d "%~dp0crawl_videos"
+        start "Bilibili-Downloader-Backend" cmd /k python app.py
+        cd /d "%~dp0"
         echo       Backend started on port 5000
-        timeout /t 2 /nobreak >nul
+        timeout /t 3 /nobreak >nul
     ) else (
         echo       Backend not found, skipping...
     )

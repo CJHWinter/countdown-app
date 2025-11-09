@@ -352,7 +352,7 @@ npm run build -- --linux # Linux
 - ⚠️ `assets/fonts/` - 自定义字体文件
 
 ### 不需要上传的文件
-- ❌ `爬取B站原视频/` - 本地工具，不需要上传
+- ❌ `crawl_videos/` - 本地工具，不需要上传
 - ❌ `node_modules/` - 依赖包，不需要上传
 - ❌ `*.bat` - Windows批处理文件
 - ❌ `*.sh` - Shell脚本
