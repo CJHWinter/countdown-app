@@ -53,9 +53,9 @@
                         <span class="mode-icon">🌸</span>
                         休息模式
                     </button>
-                    <button class="mode-btn" id="examModeBtn" role="tab" aria-selected="false" aria-controls="exam-mode">
-                        <span class="mode-icon">📚</span>
-                        考研倒计时
+                    <button class="mode-btn" id="customModeBtn" role="tab" aria-selected="false" aria-controls="custom-mode">
+                        <span class="mode-icon">🎯</span>
+                        我的定制
                     </button>
                     <button class="mode-btn" id="clockModeBtn" role="tab" aria-selected="false" aria-controls="clock-mode">
                         <span class="mode-icon">🕐</span>
@@ -394,61 +394,90 @@
                 </div>
             </section>
 
-            <!-- 考研倒计时模式 -->
-            <section class="exam-mode" id="exam-mode" role="tabpanel" aria-labelledby="examModeBtn">
-                <div class="exam-container">
-                    <div class="exam-header">
-                        <h2 class="exam-title">
-                            <span class="exam-icon">🌸</span>
-                            2025考研倒计时
-                            <span class="exam-icon">💕</span>
-                        </h2>
-                        <div class="exam-motivation">
-                            <p class="motivation-text">愿你的努力，配得上你的梦想 ✨</p>
-                            <p class="exam-date">考试时间：2025年12月21日 08:30</p>
+            <!-- 我的定制模式 -->
+            <section class="custom-mode" id="custom-mode" role="tabpanel" aria-labelledby="customModeBtn">
+                <div class="custom-container">
+                    <!-- 初始状态：操作按钮区域 -->
+                    <div class="custom-actions" id="customActions">
+                        <div class="custom-action-buttons">
+                            <button class="custom-action-btn primary" id="manageDatesBtn">
+                                <span class="btn-icon">📅</span>
+                                <span class="btn-text">设定日期</span>
+                            </button>
+                            <button class="custom-action-btn secondary" id="showCountdownBtn">
+                                <span class="btn-icon">⏰</span>
+                                <span class="btn-text">显示时间</span>
+                            </button>
+                        </div>
+                        
+                        <!-- 日期列表卡片（如果有日期） -->
+                        <div class="custom-date-cards-grid" id="customDateCardsGrid">
+                            <!-- 动态生成日期卡片 -->
+                        </div>
+                        
+                        <!-- 空状态提示 -->
+                        <div class="custom-empty-state hidden" id="customEmptyState">
+                            <div class="empty-icon">🎯</div>
+                            <div class="empty-title">还没有设定日期</div>
+                            <div class="empty-description">点击"设定日期"按钮创建你的第一个倒计时</div>
                         </div>
                     </div>
                     
-                    <div class="exam-countdown-display">
-                        <div class="exam-time-display">
-                            <div class="exam-time-unit">
-                                <div class="exam-digit-container">
-                                    <span class="exam-digit" id="examDays">000</span>
+                    <!-- 倒计时显示区域 -->
+                    <div class="custom-countdown-display hidden" id="customCountdownDisplay">
+                        <!-- 日期切换栏 -->
+                        <div class="custom-date-switcher" id="customDateSwitcher">
+                            <!-- 动态生成日期切换卡片 -->
+                        </div>
+                        
+                        <div class="custom-header">
+                            <h2 class="custom-title">
+                                <span class="custom-icon">🎯</span>
+                                <span id="customDateName">我的定制倒计时</span>
+                                <span class="custom-icon">💕</span>
+                            </h2>
+                            <div class="custom-date" id="customDateInfo">目标时间：--</div>
+                        </div>
+                        
+                        <div class="custom-time-display">
+                            <div class="custom-time-unit">
+                                <div class="custom-digit-container">
+                                    <span class="custom-digit" id="customDays">000</span>
                                 </div>
-                                <span class="exam-unit-label">天</span>
-                                <span class="exam-unit-desc">Days</span>
+                                <span class="custom-unit-label">天</span>
+                                <span class="custom-unit-desc">Days</span>
                             </div>
-                            <div class="exam-time-separator">:</div>
-                            <div class="exam-time-unit">
-                                <div class="exam-digit-container">
-                                    <span class="exam-digit" id="examHours">00</span>
+                            <div class="custom-time-separator">:</div>
+                            <div class="custom-time-unit">
+                                <div class="custom-digit-container">
+                                    <span class="custom-digit" id="customHours">00</span>
                                 </div>
-                                <span class="exam-unit-label">时</span>
-                                <span class="exam-unit-desc">Hours</span>
+                                <span class="custom-unit-label">时</span>
+                                <span class="custom-unit-desc">Hours</span>
                             </div>
-                            <div class="exam-time-separator">:</div>
-                            <div class="exam-time-unit">
-                                <div class="exam-digit-container">
-                                    <span class="exam-digit" id="examMinutes">00</span>
+                            <div class="custom-time-separator">:</div>
+                            <div class="custom-time-unit">
+                                <div class="custom-digit-container">
+                                    <span class="custom-digit" id="customMinutes">00</span>
                                 </div>
-                                <span class="exam-unit-label">分</span>
-                                <span class="exam-unit-desc">Minutes</span>
+                                <span class="custom-unit-label">分</span>
+                                <span class="custom-unit-desc">Minutes</span>
                             </div>
-                            <div class="exam-time-separator">:</div>
-                            <div class="exam-time-unit">
-                                <div class="exam-digit-container">
-                                    <span class="exam-digit" id="examSeconds">00</span>
+                            <div class="custom-time-separator">:</div>
+                            <div class="custom-time-unit">
+                                <div class="custom-digit-container">
+                                    <span class="custom-digit" id="customSeconds">00</span>
                                 </div>
-                                <span class="exam-unit-label">秒</span>
-                                <span class="exam-unit-desc">Seconds</span>
+                                <span class="custom-unit-label">秒</span>
+                                <span class="custom-unit-desc">Seconds</span>
                             </div>
                         </div>
                         
-                        <!-- 考研进度环 -->
-                        <div class="exam-progress-ring">
+                        <!-- 进度环 -->
+                        <div class="custom-progress-ring">
                             <svg class="progress-ring" width="200" height="200">
                                 <defs>
-                                    <linearGradient id="examGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                    <linearGradient id="customGradient" x1="0%" y1="0%" x2="100%" y2="100%">
                                         <stop offset="0%" style="stop-color:#ff69b4"/>
                                         <stop offset="50%" style="stop-color:#da70d6"/>
                                         <stop offset="100%" style="stop-color:#9370db"/>
@@ -469,39 +498,47 @@
                                     r="90"
                                     stroke-width="8"
                                     fill="transparent"
-                                    id="examProgressCircle"
+                                    id="customProgressCircle"
                                 />
                             </svg>
                             <div class="progress-ring-text">
-                                <div class="progress-percentage" id="examProgressPercentage">0%</div>
+                                <div class="progress-percentage" id="customProgressPercentage">0%</div>
                                 <div class="progress-label">已过时间</div>
                             </div>
                         </div>
                         
-                        <!-- 考研鼓励语 -->
-                        <div class="exam-encouragement">
-                            <div class="encouragement-text" id="examEncouragement">
+                        <!-- 鼓励语卡片 -->
+                        <div class="custom-motivation-card">
+                            <div class="motivation-card-content" id="customEncouragement">
                                 🌟 每一分努力都在为梦想积累能量
                             </div>
-                            <div class="exam-milestones">
-                                <div class="milestone" id="milestone100">
-                                    <span class="milestone-icon">🎯</span>
-                                    <span class="milestone-text">还有100天</span>
-                                </div>
-                                <div class="milestone" id="milestone50">
-                                    <span class="milestone-icon">🔥</span>
-                                    <span class="milestone-text">还有50天</span>
-                                </div>
-                                <div class="milestone" id="milestone30">
-                                    <span class="milestone-icon">⚡</span>
-                                    <span class="milestone-text">冲刺30天</span>
-                                </div>
-                                <div class="milestone" id="milestone7">
-                                    <span class="milestone-icon">💪</span>
-                                    <span class="milestone-text">最后一周</span>
-                                </div>
+                        </div>
+                        
+                        <!-- 里程碑 -->
+                        <div class="custom-milestones">
+                            <div class="milestone" id="customMilestone100">
+                                <span class="milestone-icon">🎯</span>
+                                <span class="milestone-text">还有100天</span>
+                            </div>
+                            <div class="milestone" id="customMilestone50">
+                                <span class="milestone-icon">🔥</span>
+                                <span class="milestone-text">还有50天</span>
+                            </div>
+                            <div class="milestone" id="customMilestone30">
+                                <span class="milestone-icon">⚡</span>
+                                <span class="milestone-text">冲刺30天</span>
+                            </div>
+                            <div class="milestone" id="customMilestone7">
+                                <span class="milestone-icon">💪</span>
+                                <span class="milestone-text">最后一周</span>
                             </div>
                         </div>
+                        
+                        <!-- 返回按钮 -->
+                        <button class="custom-back-btn" id="customBackBtn">
+                            <span>←</span>
+                            <span>返回</span>
+                        </button>
                     </div>
                 </div>
             </section>
@@ -930,6 +967,91 @@
                     <span class="tip-icon">💡</span>
                     <span class="tip-text">下载完成后，请点击"重新生成音乐列表"按钮刷新</span>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 自定义日期管理弹窗 -->
+    <div class="custom-date-modal hidden" id="customDateModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>📅 管理我的日期</h3>
+                <button class="close-btn" id="closeCustomDateModal" aria-label="关闭">✕</button>
+            </div>
+            <div class="modal-body">
+                <div class="custom-date-list" id="customDateList">
+                    <!-- 动态生成日期列表 -->
+                </div>
+                <div class="custom-date-empty hidden" id="customDateEmpty">
+                    <div class="empty-icon">📅</div>
+                    <div class="empty-text">还没有创建日期</div>
+                    <div class="empty-hint">点击下方按钮添加第一个日期</div>
+                </div>
+                <div class="modal-actions">
+                    <button class="btn secondary" id="exportCustomDatesBtn">
+                        <span class="btn-icon">📥</span>
+                        <span>导出数据</span>
+                    </button>
+                    <button class="btn secondary" id="importCustomDatesBtn">
+                        <span class="btn-icon">📤</span>
+                        <span>导入数据</span>
+                    </button>
+                    <button class="btn primary" id="addCustomDateBtn">
+                        <span class="btn-icon">➕</span>
+                        <span>添加新日期</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 日期编辑表单弹窗 -->
+    <div class="custom-date-edit-modal hidden" id="customDateEditModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="dateEditTitle">添加新日期</h3>
+                <button class="close-btn" id="closeDateEditModal" aria-label="关闭">✕</button>
+            </div>
+            <div class="modal-body">
+                <form id="customDateForm" class="custom-date-form">
+                    <div class="form-group">
+                        <label for="dateName">
+                            <span class="label-icon">📝</span>
+                            日期名称 <span class="required">*</span>
+                        </label>
+                        <input type="text" id="dateName" name="name" required placeholder="例如：2025考研" maxlength="50">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="dateStartTime">
+                            <span class="label-icon">🕐</span>
+                            开始时间（可选）
+                        </label>
+                        <input type="datetime-local" id="dateStartTime" name="startTime">
+                        <small class="form-hint">不填写则默认为当前时间</small>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="dateEndTime">
+                            <span class="label-icon">🎯</span>
+                            结束时间 <span class="required">*</span>
+                        </label>
+                        <input type="datetime-local" id="dateEndTime" name="endTime" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="dateMotivation">
+                            <span class="label-icon">💬</span>
+                            对自己想说的话（可选）
+                        </label>
+                        <textarea id="dateMotivation" name="motivation" rows="3" placeholder="写下对自己想说的话..." maxlength="200"></textarea>
+                    </div>
+                    
+                    <div class="form-actions">
+                        <button type="button" class="btn secondary" id="cancelDateEdit">取消</button>
+                        <button type="submit" class="btn primary" id="saveDateEdit">保存</button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>

@@ -145,10 +145,11 @@ class CountdownApp {
         this.restTargetMinutes = 15;
         this.restPausedRemainingTime = 0; // 休息模式暂停时的剩余时间
         
-        // 考研倒计时相关
-        this.examCountdownInterval = null;
-        this.examTargetTime = new Date('2025-12-21T08:30:00').getTime(); // 2025年12月21日 8:30
-        this.examStartTime = new Date('2024-01-01T00:00:00').getTime(); // 假设开始准备时间
+        // 自定义倒计时相关
+        this.customCountdownInterval = null;
+        this.customDates = []; // 存储所有自定义日期
+        this.currentCustomDateId = null; // 当前显示的日期ID
+        this.loadCustomDates(); // 加载保存的日期
         
         // 音乐系统相关
         this.musicPlaylists = {
@@ -260,12 +261,12 @@ class CountdownApp {
         // 模式切换
         this.elements.focusModeBtn = document.getElementById('focusModeBtn');
         this.elements.restModeBtn = document.getElementById('restModeBtn');
-        this.elements.examModeBtn = document.getElementById('examModeBtn');
+        this.elements.customModeBtn = document.getElementById('customModeBtn');
         this.elements.clockModeBtn = document.getElementById('clockModeBtn');
         this.elements.statsModeBtn = document.getElementById('statsModeBtn');
         this.elements.focusMode = document.getElementById('focus-mode');
         this.elements.restMode = document.getElementById('rest-mode');
-        this.elements.examMode = document.getElementById('exam-mode');
+        this.elements.customMode = document.getElementById('custom-mode');
         this.elements.clockMode = document.getElementById('clock-mode');
         this.elements.statsMode = document.getElementById('stats-mode');
         
@@ -310,14 +311,36 @@ class CountdownApp {
         this.elements.restMusicList = document.getElementById('restMusicList');
         this.elements.studyMusicList = document.getElementById('studyMusicList');
         
-        // 考研倒计时相关
-        this.elements.examDays = document.getElementById('examDays');
-        this.elements.examHours = document.getElementById('examHours');
-        this.elements.examMinutes = document.getElementById('examMinutes');
-        this.elements.examSeconds = document.getElementById('examSeconds');
-        this.elements.examProgressCircle = document.getElementById('examProgressCircle');
-        this.elements.examProgressPercentage = document.getElementById('examProgressPercentage');
-        this.elements.examEncouragement = document.getElementById('examEncouragement');
+        // 自定义倒计时相关
+        this.elements.customDays = document.getElementById('customDays');
+        this.elements.customHours = document.getElementById('customHours');
+        this.elements.customMinutes = document.getElementById('customMinutes');
+        this.elements.customSeconds = document.getElementById('customSeconds');
+        this.elements.customProgressCircle = document.getElementById('customProgressCircle');
+        this.elements.customProgressPercentage = document.getElementById('customProgressPercentage');
+        this.elements.customEncouragement = document.getElementById('customEncouragement');
+        this.elements.customDateName = document.getElementById('customDateName');
+        this.elements.customDateInfo = document.getElementById('customDateInfo');
+        this.elements.customActions = document.getElementById('customActions');
+        this.elements.customCountdownDisplay = document.getElementById('customCountdownDisplay');
+        this.elements.customDateCardsGrid = document.getElementById('customDateCardsGrid');
+        this.elements.customEmptyState = document.getElementById('customEmptyState');
+        this.elements.customDateSwitcher = document.getElementById('customDateSwitcher');
+        this.elements.manageDatesBtn = document.getElementById('manageDatesBtn');
+        this.elements.showCountdownBtn = document.getElementById('showCountdownBtn');
+        this.elements.customBackBtn = document.getElementById('customBackBtn');
+        this.elements.customDateModal = document.getElementById('customDateModal');
+        this.elements.customDateList = document.getElementById('customDateList');
+        this.elements.customDateEmpty = document.getElementById('customDateEmpty');
+        this.elements.addCustomDateBtn = document.getElementById('addCustomDateBtn');
+        this.elements.exportCustomDatesBtn = document.getElementById('exportCustomDatesBtn');
+        this.elements.importCustomDatesBtn = document.getElementById('importCustomDatesBtn');
+        this.elements.closeCustomDateModal = document.getElementById('closeCustomDateModal');
+        this.elements.customDateEditModal = document.getElementById('customDateEditModal');
+        this.elements.customDateForm = document.getElementById('customDateForm');
+        this.elements.closeDateEditModal = document.getElementById('closeDateEditModal');
+        this.elements.cancelDateEdit = document.getElementById('cancelDateEdit');
+        this.elements.dateEditTitle = document.getElementById('dateEditTitle');
         
         // 时钟相关
         this.elements.dateDisplay = document.getElementById('dateDisplay');
@@ -920,21 +943,23 @@ class CountdownApp {
         // 更新按钮状态
         this.elements.focusModeBtn.classList.toggle('active', mode === 'focus');
         this.elements.restModeBtn.classList.toggle('active', mode === 'rest');
-        this.elements.examModeBtn.classList.toggle('active', mode === 'exam');
+        if (this.elements.customModeBtn) {
+            this.elements.customModeBtn.classList.toggle('active', mode === 'exam');
+        }
         this.elements.clockModeBtn.classList.toggle('active', mode === 'clock');
         this.elements.statsModeBtn.classList.toggle('active', mode === 'stats');
         
         // 更新 ARIA 属性
         this.elements.focusModeBtn.setAttribute('aria-selected', mode === 'focus');
         this.elements.restModeBtn.setAttribute('aria-selected', mode === 'rest');
-        this.elements.examModeBtn.setAttribute('aria-selected', mode === 'exam');
+        this.elements.customModeBtn.setAttribute('aria-selected', mode === 'exam');
         this.elements.clockModeBtn.setAttribute('aria-selected', mode === 'clock');
         this.elements.statsModeBtn.setAttribute('aria-selected', mode === 'stats');
         
         // 切换显示内容
         this.elements.focusMode.classList.toggle('active', mode === 'focus');
         this.elements.restMode.classList.toggle('active', mode === 'rest');
-        this.elements.examMode.classList.toggle('active', mode === 'exam');
+        this.elements.customMode.classList.toggle('active', mode === 'exam');
         this.elements.clockMode.classList.toggle('active', mode === 'clock');
         this.elements.statsMode.classList.toggle('active', mode === 'stats');
         
@@ -970,11 +995,18 @@ class CountdownApp {
         // 注意：切换模式时不停止倒计时，让倒计时在后台继续运行
         // 用户可以随时切换回专注/休息模式查看倒计时状态
         
-        // 启动考研倒计时
+        // 启动自定义倒计时
         if (mode === 'exam') {
-            this.startExamCountdown();
+            this.renderCustomMode();
+            const currentDate = this.getCurrentCustomDate();
+            if (currentDate) {
+                this.showCustomCountdown();
+                this.startCustomCountdown();
+            } else {
+                this.showCustomActions();
+            }
         } else {
-            this.stopExamCountdown();
+            this.stopCustomCountdown();
         }
         
         // 更新音乐控制显示状态
@@ -994,7 +1026,7 @@ class CountdownApp {
         const modeNames = {
             'focus': '专注模式',
             'rest': '休息模式',
-            'exam': '考研倒计时',
+            'exam': '我的定制',
             'clock': '日常时钟'
         };
         
@@ -1002,30 +1034,159 @@ class CountdownApp {
     }
     
     // ================================
-    // 考研倒计时管理
+    // 自定义倒计时数据管理
     // ================================
     
-    startExamCountdown() {
-        this.updateExamCountdown();
-        this.examCountdownInterval = setInterval(() => {
-            this.updateExamCountdown();
-        }, 1000);
-    }
-    
-    stopExamCountdown() {
-        if (this.examCountdownInterval) {
-            clearInterval(this.examCountdownInterval);
-            this.examCountdownInterval = null;
+    loadCustomDates() {
+        const saved = localStorage.getItem('countdown-app-custom-dates');
+        if (saved) {
+            try {
+                this.customDates = JSON.parse(saved);
+                // 如果有日期且没有当前选中的，选择第一个
+                if (this.customDates.length > 0 && !this.currentCustomDateId) {
+                    this.currentCustomDateId = this.customDates[0].id;
+                }
+            } catch (e) {
+                console.error('加载自定义日期失败:', e);
+                this.customDates = [];
+            }
         }
     }
     
-    updateExamCountdown() {
+    saveCustomDates() {
+        try {
+            localStorage.setItem('countdown-app-custom-dates', JSON.stringify(this.customDates));
+        } catch (e) {
+            console.error('保存自定义日期失败:', e);
+            this.showToast('保存失败，请重试', 'error');
+        }
+    }
+    
+    generateDateId() {
+        return 'date_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+    }
+    
+    addCustomDate(dateData) {
+        const newDate = {
+            id: this.generateDateId(),
+            name: dateData.name || '未命名日期',
+            startTime: dateData.startTime || Date.now(),
+            endTime: dateData.endTime,
+            motivation: dateData.motivation || '',
+            createdAt: Date.now()
+        };
+        
+        if (!newDate.endTime) {
+            this.showToast('请设置结束时间', 'error');
+            return false;
+        }
+        
+        if (newDate.endTime <= newDate.startTime) {
+            this.showToast('结束时间必须晚于开始时间', 'error');
+            return false;
+        }
+        
+        this.customDates.push(newDate);
+        this.saveCustomDates();
+        
+        // 如果是第一个日期，自动设为当前显示
+        if (this.customDates.length === 1) {
+            this.currentCustomDateId = newDate.id;
+        }
+        
+        return true;
+    }
+    
+    updateCustomDate(id, dateData) {
+        const index = this.customDates.findIndex(d => d.id === id);
+        if (index === -1) return false;
+        
+        const updatedDate = {
+            ...this.customDates[index],
+            name: dateData.name || this.customDates[index].name,
+            startTime: dateData.startTime !== undefined ? dateData.startTime : this.customDates[index].startTime,
+            endTime: dateData.endTime || this.customDates[index].endTime,
+            motivation: dateData.motivation !== undefined ? dateData.motivation : this.customDates[index].motivation
+        };
+        
+        if (updatedDate.endTime <= updatedDate.startTime) {
+            this.showToast('结束时间必须晚于开始时间', 'error');
+            return false;
+        }
+        
+        this.customDates[index] = updatedDate;
+        this.saveCustomDates();
+        return true;
+    }
+    
+    deleteCustomDate(id) {
+        const index = this.customDates.findIndex(d => d.id === id);
+        if (index === -1) return false;
+        
+        this.customDates.splice(index, 1);
+        this.saveCustomDates();
+        
+        // 如果删除的是当前显示的日期
+        if (this.currentCustomDateId === id) {
+            if (this.customDates.length > 0) {
+                this.currentCustomDateId = this.customDates[0].id;
+            } else {
+                this.currentCustomDateId = null;
+            }
+        }
+        
+        return true;
+    }
+    
+    setCurrentCustomDate(id) {
+        const date = this.customDates.find(d => d.id === id);
+        if (date) {
+            this.currentCustomDateId = id;
+            if (this.currentMode === 'exam') {
+                this.updateCustomCountdown();
+            }
+            return true;
+        }
+        return false;
+    }
+    
+    getCurrentCustomDate() {
+        if (!this.currentCustomDateId) return null;
+        return this.customDates.find(d => d.id === this.currentCustomDateId);
+    }
+    
+    // ================================
+    // 自定义倒计时显示管理
+    // ================================
+    
+    startCustomCountdown() {
+        this.updateCustomCountdown();
+        this.customCountdownInterval = setInterval(() => {
+            this.updateCustomCountdown();
+        }, 1000);
+    }
+    
+    stopCustomCountdown() {
+        if (this.customCountdownInterval) {
+            clearInterval(this.customCountdownInterval);
+            this.customCountdownInterval = null;
+        }
+    }
+    
+    updateCustomCountdown() {
+        const currentDate = this.getCurrentCustomDate();
+        if (!currentDate) {
+            // 没有选中的日期，停止倒计时
+            this.stopCustomCountdown();
+            return;
+        }
+        
         const now = new Date().getTime();
-        const remaining = this.examTargetTime - now;
+        const remaining = currentDate.endTime - now;
         
         if (remaining <= 0) {
-            // 考试已开始
-            this.handleExamStarted();
+            // 时间已到
+            this.handleCustomDateReached(currentDate);
             return;
         }
         
@@ -1036,39 +1197,47 @@ class CountdownApp {
         const seconds = Math.floor((remaining % (1000 * 60)) / 1000);
         
         // 更新显示
-        this.updateDigitWithAnimation(this.elements.examDays, String(days).padStart(3, '0'));
-        this.updateDigitWithAnimation(this.elements.examHours, String(hours).padStart(2, '0'));
-        this.updateDigitWithAnimation(this.elements.examMinutes, String(minutes).padStart(2, '0'));
-        this.updateDigitWithAnimation(this.elements.examSeconds, String(seconds).padStart(2, '0'));
+        if (this.elements.customDays) this.updateDigitWithAnimation(this.elements.customDays, String(days).padStart(3, '0'));
+        if (this.elements.customHours) this.updateDigitWithAnimation(this.elements.customHours, String(hours).padStart(2, '0'));
+        if (this.elements.customMinutes) this.updateDigitWithAnimation(this.elements.customMinutes, String(minutes).padStart(2, '0'));
+        if (this.elements.customSeconds) this.updateDigitWithAnimation(this.elements.customSeconds, String(seconds).padStart(2, '0'));
         
         // 更新进度环
-        this.updateExamProgress(remaining);
+        this.updateCustomProgress(remaining, currentDate);
         
         // 更新鼓励语和里程碑
-        this.updateExamEncouragement(days);
-        this.updateExamMilestones(days);
+        this.updateCustomEncouragement(days, currentDate);
+        this.updateCustomMilestones(days);
     }
     
-    updateExamProgress(remaining) {
-        // 假设从开始准备到考试有一年时间
-        const totalDuration = this.examTargetTime - this.examStartTime;
+    updateCustomProgress(remaining, date) {
+        const totalDuration = date.endTime - date.startTime;
         const elapsed = totalDuration - remaining;
         const progress = Math.max(0, Math.min(100, (elapsed / totalDuration) * 100));
         
         // 更新进度环
-        if (this.elements.examProgressCircle) {
+        if (this.elements.customProgressCircle) {
             const circumference = 2 * Math.PI * 90; // r=90
             const offset = circumference - (progress / 100) * circumference;
-            this.elements.examProgressCircle.style.strokeDashoffset = offset;
+            this.elements.customProgressCircle.style.strokeDashoffset = offset;
         }
         
         // 更新百分比显示
-        if (this.elements.examProgressPercentage) {
-            this.elements.examProgressPercentage.textContent = Math.round(progress) + '%';
+        if (this.elements.customProgressPercentage) {
+            this.elements.customProgressPercentage.textContent = Math.round(progress) + '%';
         }
     }
     
-    updateExamEncouragement(days) {
+    updateCustomEncouragement(days, date) {
+        // 优先使用用户自定义的激励语
+        if (date.motivation && date.motivation.trim()) {
+            if (this.elements.customEncouragement) {
+                this.elements.customEncouragement.textContent = date.motivation;
+            }
+            return;
+        }
+        
+        // 否则使用默认激励语
         const encouragements = [
             '🌟 每一分努力都在为梦想积累能量',
             '💪 坚持就是胜利，你已经走了这么远',
@@ -1095,17 +1264,17 @@ class CountdownApp {
             encouragement = encouragements[Math.floor(Math.random() * encouragements.length)];
         }
         
-        if (this.elements.examEncouragement) {
-            this.elements.examEncouragement.textContent = encouragement;
+        if (this.elements.customEncouragement) {
+            this.elements.customEncouragement.textContent = encouragement;
         }
     }
     
-    updateExamMilestones(days) {
+    updateCustomMilestones(days) {
         const milestones = [
-            { id: 'milestone100', threshold: 100, active: days <= 100 },
-            { id: 'milestone50', threshold: 50, active: days <= 50 },
-            { id: 'milestone30', threshold: 30, active: days <= 30 },
-            { id: 'milestone7', threshold: 7, active: days <= 7 }
+            { id: 'customMilestone100', threshold: 100, active: days <= 100 },
+            { id: 'customMilestone50', threshold: 50, active: days <= 50 },
+            { id: 'customMilestone30', threshold: 30, active: days <= 30 },
+            { id: 'customMilestone7', threshold: 7, active: days <= 7 }
         ];
         
         milestones.forEach(milestone => {
@@ -1116,19 +1285,608 @@ class CountdownApp {
         });
     }
     
-    handleExamStarted() {
-        // 考试已开始
-        if (this.elements.examDays) this.elements.examDays.textContent = '000';
-        if (this.elements.examHours) this.elements.examHours.textContent = '00';
-        if (this.elements.examMinutes) this.elements.examMinutes.textContent = '00';
-        if (this.elements.examSeconds) this.elements.examSeconds.textContent = '00';
+    handleCustomDateReached(date) {
+        // 时间已到
+        if (this.elements.customDays) this.elements.customDays.textContent = '000';
+        if (this.elements.customHours) this.elements.customHours.textContent = '00';
+        if (this.elements.customMinutes) this.elements.customMinutes.textContent = '00';
+        if (this.elements.customSeconds) this.elements.customSeconds.textContent = '00';
         
-        if (this.elements.examEncouragement) {
-            this.elements.examEncouragement.textContent = '🎉 考试已开始！发挥你的最佳水平！';
+        if (this.elements.customEncouragement) {
+            this.elements.customEncouragement.textContent = '🎉 时间已到！恭喜你达成目标！';
         }
         
-        this.stopExamCountdown();
-        this.showToast('🎊 考研已开始！祝你考试顺利！', 'success');
+        this.stopCustomCountdown();
+        this.showToast(`🎊 ${date.name} 时间已到！`, 'success');
+    }
+    
+    // ================================
+    // 自定义日期渲染和UI管理
+    // ================================
+    
+    renderCustomMode() {
+        this.renderCustomDateCards();
+        this.updateCustomModeUI();
+    }
+    
+    updateCustomModeUI() {
+        if (this.customDates.length === 0) {
+            this.elements.customEmptyState.classList.remove('hidden');
+            this.elements.customDateCardsGrid.innerHTML = '';
+        } else {
+            this.elements.customEmptyState.classList.add('hidden');
+        }
+    }
+    
+    renderCustomDateCards() {
+        const grid = this.elements.customDateCardsGrid;
+        if (!grid) return;
+        
+        grid.innerHTML = '';
+        
+        this.customDates.forEach(date => {
+            const card = this.createCustomDateCard(date);
+            grid.appendChild(card);
+        });
+    }
+    
+    createCustomDateCard(date) {
+        const card = document.createElement('div');
+        card.className = 'custom-date-card';
+        card.dataset.dateId = date.id;
+        
+        const now = Date.now();
+        const remaining = date.endTime - now;
+        const days = Math.floor(remaining / (1000 * 60 * 60 * 24));
+        const isActive = this.currentCustomDateId === date.id;
+        
+        const endDate = new Date(date.endTime);
+        const endDateStr = `${endDate.getFullYear()}年${endDate.getMonth() + 1}月${endDate.getDate()}日 ${String(endDate.getHours()).padStart(2, '0')}:${String(endDate.getMinutes()).padStart(2, '0')}`;
+        
+        card.innerHTML = `
+            <div class="custom-date-card-header">
+                <h3 class="custom-date-card-name">${this.escapeHtml(date.name)}</h3>
+                ${isActive ? '<span class="custom-date-card-badge">当前显示</span>' : ''}
+            </div>
+            <div class="custom-date-card-body">
+                <div class="custom-date-card-info">
+                    <div class="custom-date-card-time">
+                        <span class="info-label">目标时间：</span>
+                        <span class="info-value">${endDateStr}</span>
+                    </div>
+                    <div class="custom-date-card-remaining">
+                        <span class="info-label">剩余：</span>
+                        <span class="info-value ${remaining < 0 ? 'expired' : ''}">${remaining < 0 ? '已过期' : `${days}天`}</span>
+                    </div>
+                </div>
+                ${date.motivation ? `<div class="custom-date-card-motivation">${this.escapeHtml(date.motivation)}</div>` : ''}
+            </div>
+            <div class="custom-date-card-actions">
+                <button class="custom-date-card-btn primary" data-action="show" title="显示倒计时">
+                    <span>⏰</span>
+                    <span>显示</span>
+                </button>
+                <button class="custom-date-card-btn secondary" data-action="edit" title="编辑">
+                    <span>✏️</span>
+                    <span>编辑</span>
+                </button>
+                <button class="custom-date-card-btn danger" data-action="delete" title="删除">
+                    <span>🗑️</span>
+                    <span>删除</span>
+                </button>
+            </div>
+        `;
+        
+        // 绑定事件
+        card.querySelector('[data-action="show"]').addEventListener('click', () => {
+            this.setCurrentCustomDate(date.id);
+            this.showCustomCountdown();
+            this.startCustomCountdown();
+        });
+        
+        card.querySelector('[data-action="edit"]').addEventListener('click', () => {
+            this.showDateEditForm(date.id);
+        });
+        
+        card.querySelector('[data-action="delete"]').addEventListener('click', () => {
+            if (confirm(`确定要删除"${date.name}"吗？`)) {
+                this.deleteCustomDate(date.id);
+                this.renderCustomMode();
+                this.renderCustomDateList();
+                this.renderCustomDateSwitcher();
+            }
+        });
+        
+        return card;
+    }
+    
+    renderCustomDateList() {
+        const list = this.elements.customDateList;
+        const empty = this.elements.customDateEmpty;
+        if (!list || !empty) return;
+        
+        list.innerHTML = '';
+        
+        if (this.customDates.length === 0) {
+            list.classList.add('hidden');
+            empty.classList.remove('hidden');
+        } else {
+            list.classList.remove('hidden');
+            empty.classList.add('hidden');
+            
+            this.customDates.forEach(date => {
+                const item = this.createCustomDateListItem(date);
+                list.appendChild(item);
+            });
+        }
+    }
+    
+    createCustomDateListItem(date) {
+        const item = document.createElement('div');
+        item.className = 'custom-date-list-item';
+        item.dataset.dateId = date.id;
+        
+        const now = Date.now();
+        const remaining = date.endTime - now;
+        const days = Math.floor(remaining / (1000 * 60 * 60 * 24));
+        const isActive = this.currentCustomDateId === date.id;
+        
+        const startDate = new Date(date.startTime);
+        const endDate = new Date(date.endTime);
+        const startDateStr = `${startDate.getFullYear()}-${String(startDate.getMonth() + 1).padStart(2, '0')}-${String(startDate.getDate()).padStart(2, '0')} ${String(startDate.getHours()).padStart(2, '0')}:${String(startDate.getMinutes()).padStart(2, '0')}`;
+        const endDateStr = `${endDate.getFullYear()}-${String(endDate.getMonth() + 1).padStart(2, '0')}-${String(endDate.getDate()).padStart(2, '0')} ${String(endDate.getHours()).padStart(2, '0')}:${String(endDate.getMinutes()).padStart(2, '0')}`;
+        
+        item.innerHTML = `
+            <div class="custom-date-list-item-header">
+                <h4 class="custom-date-list-item-name">${this.escapeHtml(date.name)}</h4>
+                ${isActive ? '<span class="custom-date-list-item-badge">当前</span>' : ''}
+            </div>
+            <div class="custom-date-list-item-info">
+                <div class="info-row">
+                    <span class="info-label">开始：</span>
+                    <span class="info-value">${startDateStr}</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">结束：</span>
+                    <span class="info-value">${endDateStr}</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">剩余：</span>
+                    <span class="info-value ${remaining < 0 ? 'expired' : ''}">${remaining < 0 ? '已过期' : `${days}天`}</span>
+                </div>
+            </div>
+            ${date.motivation ? `<div class="custom-date-list-item-motivation">${this.escapeHtml(date.motivation)}</div>` : ''}
+            <div class="custom-date-list-item-actions">
+                <button class="btn-icon-small" data-action="show" title="显示倒计时">⏰</button>
+                <button class="btn-icon-small" data-action="edit" title="编辑">✏️</button>
+                <button class="btn-icon-small danger" data-action="delete" title="删除">🗑️</button>
+            </div>
+        `;
+        
+        // 绑定事件
+        item.querySelector('[data-action="show"]').addEventListener('click', () => {
+            this.setCurrentCustomDate(date.id);
+            this.hideCustomDateModal();
+            this.showCustomCountdown();
+            this.startCustomCountdown();
+        });
+        
+        item.querySelector('[data-action="edit"]').addEventListener('click', () => {
+            this.hideCustomDateModal();
+            this.showDateEditForm(date.id);
+        });
+        
+        item.querySelector('[data-action="delete"]').addEventListener('click', () => {
+            if (confirm(`确定要删除"${date.name}"吗？`)) {
+                this.deleteCustomDate(date.id);
+                this.renderCustomDateList();
+                this.renderCustomMode();
+                this.renderCustomDateSwitcher();
+            }
+        });
+        
+        return item;
+    }
+    
+    renderCustomDateSwitcher() {
+        const switcher = this.elements.customDateSwitcher;
+        if (!switcher) return;
+        
+        switcher.innerHTML = '';
+        
+        if (this.customDates.length <= 1) {
+            switcher.classList.add('hidden');
+            return;
+        }
+        
+        switcher.classList.remove('hidden');
+        
+        this.customDates.forEach(date => {
+            const card = document.createElement('div');
+            card.className = `custom-date-switch-card ${this.currentCustomDateId === date.id ? 'active' : ''}`;
+            card.dataset.dateId = date.id;
+            
+            const now = Date.now();
+            const remaining = date.endTime - now;
+            const days = Math.floor(remaining / (1000 * 60 * 60 * 24));
+            
+            card.innerHTML = `
+                <div class="custom-date-switch-card-name">${this.escapeHtml(date.name)}</div>
+                <div class="custom-date-switch-card-days">${remaining < 0 ? '已过期' : `${days}天`}</div>
+            `;
+            
+            card.addEventListener('click', () => {
+                this.setCurrentCustomDate(date.id);
+                this.renderCustomDateSwitcher();
+                this.updateCustomCountdown();
+                this.updateCustomCountdownDisplay();
+            });
+            
+            switcher.appendChild(card);
+        });
+    }
+    
+    showCustomActions() {
+        if (this.elements.customActions) this.elements.customActions.classList.remove('hidden');
+        if (this.elements.customCountdownDisplay) this.elements.customCountdownDisplay.classList.add('hidden');
+    }
+    
+    showCustomCountdown() {
+        if (this.elements.customActions) this.elements.customActions.classList.add('hidden');
+        if (this.elements.customCountdownDisplay) this.elements.customCountdownDisplay.classList.remove('hidden');
+        this.updateCustomCountdownDisplay();
+        this.renderCustomDateSwitcher();
+    }
+    
+    updateCustomCountdownDisplay() {
+        const currentDate = this.getCurrentCustomDate();
+        if (!currentDate) return;
+        
+        if (this.elements.customDateName) {
+            this.elements.customDateName.textContent = currentDate.name;
+        }
+        
+        if (this.elements.customDateInfo) {
+            const endDate = new Date(currentDate.endTime);
+            const endDateStr = `${endDate.getFullYear()}年${endDate.getMonth() + 1}月${endDate.getDate()}日 ${String(endDate.getHours()).padStart(2, '0')}:${String(endDate.getMinutes()).padStart(2, '0')}`;
+            this.elements.customDateInfo.textContent = `目标时间：${endDateStr}`;
+        }
+    }
+    
+    showCustomDateModal() {
+        if (this.elements.customDateModal) {
+            this.elements.customDateModal.classList.remove('hidden');
+            this.renderCustomDateList();
+        }
+    }
+    
+    hideCustomDateModal() {
+        if (this.elements.customDateModal) {
+            this.elements.customDateModal.classList.add('hidden');
+        }
+    }
+    
+    showDateEditForm(dateId = null) {
+        const modal = this.elements.customDateEditModal;
+        const form = this.elements.customDateForm;
+        const title = this.elements.dateEditTitle;
+        
+        if (!modal || !form || !title) return;
+        
+        // 设置标题
+        title.textContent = dateId ? '编辑日期' : '添加新日期';
+        
+        // 如果是编辑模式，填充表单
+        if (dateId) {
+            const date = this.customDates.find(d => d.id === dateId);
+            if (date) {
+                const startDate = new Date(date.startTime);
+                const endDate = new Date(date.endTime);
+                
+                // 转换为datetime-local格式 (YYYY-MM-DDTHH:mm)
+                const startValue = `${startDate.getFullYear()}-${String(startDate.getMonth() + 1).padStart(2, '0')}-${String(startDate.getDate()).padStart(2, '0')}T${String(startDate.getHours()).padStart(2, '0')}:${String(startDate.getMinutes()).padStart(2, '0')}`;
+                const endValue = `${endDate.getFullYear()}-${String(endDate.getMonth() + 1).padStart(2, '0')}-${String(endDate.getDate()).padStart(2, '0')}T${String(endDate.getHours()).padStart(2, '0')}:${String(endDate.getMinutes()).padStart(2, '0')}`;
+                
+                document.getElementById('dateName').value = date.name;
+                document.getElementById('dateStartTime').value = startValue;
+                document.getElementById('dateEndTime').value = endValue;
+                document.getElementById('dateMotivation').value = date.motivation || '';
+                
+                form.dataset.editId = dateId;
+            }
+        } else {
+            // 新建模式，清空表单
+            form.reset();
+            delete form.dataset.editId;
+            // 设置默认结束时间为当前时间+1天
+            const tomorrow = new Date();
+            tomorrow.setDate(tomorrow.getDate() + 1);
+            const tomorrowValue = `${tomorrow.getFullYear()}-${String(tomorrow.getMonth() + 1).padStart(2, '0')}-${String(tomorrow.getDate()).padStart(2, '0')}T${String(tomorrow.getHours()).padStart(2, '0')}:${String(tomorrow.getMinutes()).padStart(2, '0')}`;
+            document.getElementById('dateEndTime').value = tomorrowValue;
+        }
+        
+        modal.classList.remove('hidden');
+    }
+    
+    hideDateEditForm() {
+        if (this.elements.customDateEditModal) {
+            this.elements.customDateEditModal.classList.add('hidden');
+            this.elements.customDateForm.reset();
+            delete this.elements.customDateForm.dataset.editId;
+        }
+    }
+    
+    handleDateFormSubmit(e) {
+        e.preventDefault();
+        
+        const form = e.target;
+        const formData = new FormData(form);
+        const editId = form.dataset.editId;
+        
+        const name = formData.get('name')?.trim();
+        const startTimeStr = formData.get('startTime');
+        const endTimeStr = formData.get('endTime');
+        const motivation = formData.get('motivation')?.trim() || '';
+        
+        if (!name) {
+            this.showToast('请输入日期名称', 'error');
+            return;
+        }
+        
+        if (!endTimeStr) {
+            this.showToast('请设置结束时间', 'error');
+            return;
+        }
+        
+        const endTime = new Date(endTimeStr).getTime();
+        const startTime = startTimeStr ? new Date(startTimeStr).getTime() : Date.now();
+        
+        if (endTime <= startTime) {
+            this.showToast('结束时间必须晚于开始时间', 'error');
+            return;
+        }
+        
+        const dateData = {
+            name,
+            startTime,
+            endTime,
+            motivation
+        };
+        
+        if (editId) {
+            // 编辑模式
+            if (this.updateCustomDate(editId, dateData)) {
+                this.showToast('日期已更新 ✨', 'success');
+                this.hideDateEditForm();
+                this.renderCustomDateList();
+                this.renderCustomMode();
+                this.renderCustomDateSwitcher();
+                if (this.currentCustomDateId === editId) {
+                    this.updateCustomCountdownDisplay();
+                }
+            }
+        } else {
+            // 新建模式
+            if (this.addCustomDate(dateData)) {
+                this.showToast('日期已添加 ✨', 'success');
+                this.hideDateEditForm();
+                this.renderCustomDateList();
+                this.renderCustomMode();
+                this.renderCustomDateSwitcher();
+            }
+        }
+    }
+    
+    escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+    }
+    
+    // ================================
+    // 自定义日期导入导出
+    // ================================
+    
+    exportCustomDates() {
+        if (this.customDates.length === 0) {
+            this.showToast('没有可导出的日期数据', 'error');
+            return;
+        }
+        
+        const exportData = {
+            version: '1.0',
+            exportTime: new Date().toISOString(),
+            count: this.customDates.length,
+            dates: this.customDates
+        };
+        
+        const dataStr = JSON.stringify(exportData, null, 2);
+        const dataBlob = new Blob([dataStr], { type: 'application/json' });
+        const url = URL.createObjectURL(dataBlob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `custom-dates-${new Date().toISOString().split('T')[0]}.json`;
+        link.click();
+        URL.revokeObjectURL(url);
+        this.showToast(`已导出 ${this.customDates.length} 个日期 ✨`, 'success');
+    }
+    
+    importCustomDates() {
+        // 创建文件输入元素
+        const input = document.createElement('input');
+        input.type = 'file';
+        input.accept = '.json';
+        input.style.display = 'none';
+        
+        input.onchange = (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                try {
+                    const importedData = JSON.parse(event.target.result);
+                    
+                    // 验证数据格式
+                    if (!this.validateCustomDatesData(importedData)) {
+                        this.showToast('数据格式不正确，请检查文件', 'error');
+                        return;
+                    }
+                    
+                    // 提取日期数组（兼容不同格式）
+                    let datesToImport = [];
+                    if (Array.isArray(importedData)) {
+                        // 如果是数组格式，直接使用
+                        datesToImport = importedData;
+                    } else if (importedData.dates && Array.isArray(importedData.dates)) {
+                        // 如果是导出格式（包含version、exportTime等）
+                        datesToImport = importedData.dates;
+                    } else {
+                        this.showToast('数据格式不正确，请检查文件', 'error');
+                        return;
+                    }
+                    
+                    if (datesToImport.length === 0) {
+                        this.showToast('导入文件中没有日期数据', 'error');
+                        return;
+                    }
+                    
+                    // 询问用户如何处理
+                    const action = confirm(
+                        `导入数据选项：\n\n` +
+                        `文件包含 ${datesToImport.length} 个日期\n\n` +
+                        `点击"确定"：覆盖现有数据（将替换所有当前数据）\n` +
+                        `点击"取消"：合并数据（保留现有数据，添加新数据）\n\n` +
+                        `请选择处理方式：`
+                    );
+                    
+                    if (action) {
+                        // 覆盖模式
+                        this.customDates = datesToImport;
+                        this.saveCustomDates();
+                        
+                        // 如果当前选中的日期不在新数据中，选择第一个
+                        if (!this.customDates.find(d => d.id === this.currentCustomDateId)) {
+                            this.currentCustomDateId = this.customDates.length > 0 ? this.customDates[0].id : null;
+                        }
+                        
+                        this.showToast(`已覆盖导入 ${datesToImport.length} 个日期 ✨`, 'success');
+                    } else {
+                        // 合并模式
+                        const mergedCount = this.mergeCustomDatesData(datesToImport);
+                        this.showToast(`已合并导入，新增 ${mergedCount} 个日期 ✨`, 'success');
+                    }
+                    
+                    // 刷新UI
+                    this.renderCustomDateList();
+                    this.renderCustomMode();
+                    this.renderCustomDateSwitcher();
+                    
+                    // 如果当前在显示倒计时，更新显示
+                    if (this.currentMode === 'exam' && this.currentCustomDateId) {
+                        this.updateCustomCountdownDisplay();
+                    }
+                    
+                } catch (error) {
+                    console.error('导入失败:', error);
+                    this.showToast('文件解析失败，请检查文件格式', 'error');
+                }
+            };
+            
+            reader.onerror = () => {
+                this.showToast('文件读取失败', 'error');
+            };
+            
+            reader.readAsText(file);
+        };
+        
+        // 触发文件选择
+        document.body.appendChild(input);
+        input.click();
+        document.body.removeChild(input);
+    }
+    
+    validateCustomDatesData(data) {
+        // 验证数据格式
+        if (!data) return false;
+        
+        // 如果是数组格式
+        if (Array.isArray(data)) {
+            return data.every(date => this.validateSingleDate(date));
+        }
+        
+        // 如果是导出格式（包含version、dates等）
+        if (data.dates && Array.isArray(data.dates)) {
+            return data.dates.every(date => this.validateSingleDate(date));
+        }
+        
+        return false;
+    }
+    
+    validateSingleDate(date) {
+        // 验证单个日期对象的格式
+        if (!date || typeof date !== 'object') return false;
+        
+        // 必需字段
+        if (!date.id || typeof date.id !== 'string') return false;
+        if (!date.name || typeof date.name !== 'string') return false;
+        if (typeof date.endTime !== 'number' || date.endTime <= 0) return false;
+        
+        // 可选字段验证
+        if (date.startTime !== undefined && (typeof date.startTime !== 'number' || date.startTime <= 0)) {
+            return false;
+        }
+        if (date.motivation !== undefined && typeof date.motivation !== 'string') {
+            return false;
+        }
+        if (date.createdAt !== undefined && (typeof date.createdAt !== 'number' || date.createdAt <= 0)) {
+            return false;
+        }
+        
+        // 验证时间逻辑
+        const startTime = date.startTime || Date.now();
+        if (date.endTime <= startTime) {
+            return false;
+        }
+        
+        return true;
+    }
+    
+    mergeCustomDatesData(importedDates) {
+        // 合并数据，避免重复（基于ID和内容）
+        const existingIds = new Set(this.customDates.map(d => d.id));
+        let addedCount = 0;
+        
+        importedDates.forEach(importedDate => {
+            // 如果ID已存在，跳过（避免重复）
+            if (existingIds.has(importedDate.id)) {
+                return;
+            }
+            
+            // 检查是否有相同名称和时间的日期（可能是同一个日期但ID不同）
+            const duplicate = this.customDates.find(d => 
+                d.name === importedDate.name && 
+                d.endTime === importedDate.endTime
+            );
+            
+            if (duplicate) {
+                // 如果找到重复，跳过
+                return;
+            }
+            
+            // 如果ID冲突，生成新ID
+            let finalDate = { ...importedDate };
+            if (existingIds.has(finalDate.id)) {
+                finalDate.id = this.generateDateId();
+            }
+            
+            this.customDates.push(finalDate);
+            existingIds.add(finalDate.id);
+            addedCount++;
+        });
+        
+        this.saveCustomDates();
+        return addedCount;
     }
     
     // ================================
@@ -4410,9 +5168,44 @@ class CountdownApp {
         // 模式切换
         this.elements.focusModeBtn.addEventListener('click', () => this.switchMode('focus'));
         this.elements.restModeBtn.addEventListener('click', () => this.switchMode('rest'));
-        this.elements.examModeBtn.addEventListener('click', () => this.switchMode('exam'));
+        this.elements.customModeBtn.addEventListener('click', () => this.switchMode('exam'));
         this.elements.clockModeBtn.addEventListener('click', () => this.switchMode('clock'));
         this.elements.statsModeBtn.addEventListener('click', () => this.switchMode('stats'));
+        
+        // 自定义日期相关事件
+        this.elements.manageDatesBtn?.addEventListener('click', () => this.showCustomDateModal());
+        this.elements.showCountdownBtn?.addEventListener('click', () => {
+            const currentDate = this.getCurrentCustomDate();
+            if (currentDate) {
+                this.showCustomCountdown();
+                this.startCustomCountdown();
+            } else {
+                this.showToast('请先设定日期', 'error');
+            }
+        });
+        this.elements.customBackBtn?.addEventListener('click', () => {
+            this.showCustomActions();
+            this.stopCustomCountdown();
+        });
+        this.elements.closeCustomDateModal?.addEventListener('click', () => this.hideCustomDateModal());
+        this.elements.addCustomDateBtn?.addEventListener('click', () => this.showDateEditForm());
+        this.elements.closeDateEditModal?.addEventListener('click', () => this.hideDateEditForm());
+        this.elements.cancelDateEdit?.addEventListener('click', () => this.hideDateEditForm());
+        this.elements.customDateForm?.addEventListener('submit', (e) => this.handleDateFormSubmit(e));
+        this.elements.exportCustomDatesBtn?.addEventListener('click', () => this.exportCustomDates());
+        this.elements.importCustomDatesBtn?.addEventListener('click', () => this.importCustomDates());
+        
+        // 点击弹窗背景关闭
+        this.elements.customDateModal?.addEventListener('click', (e) => {
+            if (e.target === this.elements.customDateModal) {
+                this.hideCustomDateModal();
+            }
+        });
+        this.elements.customDateEditModal?.addEventListener('click', (e) => {
+            if (e.target === this.elements.customDateEditModal) {
+                this.hideDateEditForm();
+            }
+        });
         
         // 统计页面按钮
         document.getElementById('importStatsBtn')?.addEventListener('click', () => this.importStats());
@@ -6083,3 +6876,4 @@ if (document.readyState === 'loading') {
 
 // 导出类供其他脚本使用
 window.CountdownApp = CountdownApp;
+

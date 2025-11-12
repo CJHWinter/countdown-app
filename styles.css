@@ -4248,6 +4248,902 @@ body {
   width: 100%;
 }
 
+/* ================================
+   自定义倒计时模式样式
+   ================================ */
+
+.custom-mode {
+  display: none;
+}
+
+.custom-mode.active {
+  display: block;
+}
+
+.custom-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: var(--spacing-xl);
+}
+
+/* 操作按钮区域 */
+.custom-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-xl);
+}
+
+.custom-action-buttons {
+  display: flex;
+  gap: var(--spacing-lg);
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.custom-action-btn {
+  padding: var(--spacing-md) var(--spacing-xl);
+  border: none;
+  border-radius: var(--border-radius-lg);
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--animation-normal) ease;
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  min-width: 180px;
+  justify-content: center;
+}
+
+.custom-action-btn .btn-icon {
+  font-size: 1.5rem;
+}
+
+.custom-action-btn.primary {
+  background: var(--gradient-exam);
+  color: white;
+  box-shadow: var(--shadow-glow);
+}
+
+.custom-action-btn.primary:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-neon);
+}
+
+.custom-action-btn.secondary {
+  background: var(--bg-secondary);
+  border: 2px solid var(--border-primary);
+  color: var(--text-primary);
+}
+
+.custom-action-btn.secondary:hover {
+  background: var(--bg-tertiary);
+  border-color: var(--accent-primary);
+  transform: translateY(-2px);
+}
+
+/* 日期卡片网格 */
+.custom-date-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: var(--spacing-lg);
+  width: 100%;
+  max-width: 1000px;
+}
+
+/* 日期卡片 */
+.custom-date-card {
+  background: var(--bg-card);
+  border: 2px solid var(--border-secondary);
+  border-radius: var(--border-radius-lg);
+  padding: var(--spacing-lg);
+  transition: all var(--animation-normal) ease;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+}
+
+.custom-date-card:hover {
+  border-color: var(--accent-primary);
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-card);
+}
+
+.custom-date-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.custom-date-card-name {
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.custom-date-card-badge {
+  padding: var(--spacing-xs) var(--spacing-sm);
+  background: var(--gradient-exam);
+  color: white;
+  border-radius: var(--border-radius);
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.custom-date-card-body {
+  flex: 1;
+}
+
+.custom-date-card-info {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+  margin-bottom: var(--spacing-sm);
+}
+
+.custom-date-card-time,
+.custom-date-card-remaining {
+  display: flex;
+  gap: var(--spacing-xs);
+  font-size: 0.95rem;
+}
+
+.info-label {
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+.info-value {
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+.info-value.expired {
+  color: var(--accent-danger);
+}
+
+.custom-date-card-motivation {
+  padding: var(--spacing-sm);
+  background: var(--bg-tertiary);
+  border-radius: var(--border-radius);
+  color: var(--text-secondary);
+  font-style: italic;
+  font-size: 0.9rem;
+  line-height: 1.6;
+}
+
+.custom-date-card-actions {
+  display: flex;
+  gap: var(--spacing-sm);
+}
+
+.custom-date-card-btn {
+  flex: 1;
+  padding: var(--spacing-xs) var(--spacing-sm);
+  border: 1px solid var(--border-secondary);
+  border-radius: var(--border-radius);
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: all var(--animation-normal) ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-xs);
+  font-size: 0.9rem;
+}
+
+.custom-date-card-btn:hover {
+  border-color: var(--accent-primary);
+  background: var(--bg-tertiary);
+  transform: translateY(-2px);
+}
+
+.custom-date-card-btn.primary {
+  color: var(--accent-primary);
+}
+
+.custom-date-card-btn.danger {
+  color: var(--accent-danger);
+}
+
+.custom-date-card-btn.danger:hover {
+  border-color: var(--accent-danger);
+  background: rgba(255, 71, 87, 0.1);
+}
+
+/* 空状态 */
+.custom-empty-state {
+  text-align: center;
+  padding: var(--spacing-xl);
+  color: var(--text-secondary);
+}
+
+.empty-icon {
+  font-size: 4rem;
+  margin-bottom: var(--spacing-md);
+}
+
+.empty-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: var(--spacing-sm);
+}
+
+.empty-description {
+  font-size: 1rem;
+  color: var(--text-secondary);
+}
+
+/* 倒计时显示区域 */
+.custom-countdown-display {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-xl);
+}
+
+.custom-header {
+  margin-bottom: var(--spacing-xl);
+  text-align: center;
+}
+
+.custom-title {
+  font-family: var(--font-primary);
+  font-size: 2.5rem;
+  margin-bottom: var(--spacing-md);
+  background: var(--gradient-exam);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-sm);
+}
+
+.custom-icon {
+  font-size: 3rem;
+  filter: drop-shadow(0 0 10px rgba(255, 105, 180, 0.5));
+  animation: floatGently 3s ease-in-out infinite;
+}
+
+@keyframes floatGently {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+.custom-date {
+  font-size: 1.1rem;
+  color: var(--text-secondary);
+  font-weight: 600;
+}
+
+/* 日期切换栏 */
+.custom-date-switcher {
+  display: flex;
+  gap: var(--spacing-md);
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-bottom: var(--spacing-lg);
+  padding: var(--spacing-md);
+  background: var(--bg-card);
+  border-radius: var(--border-radius-lg);
+  border: 1px solid var(--border-secondary);
+}
+
+.custom-date-switcher.hidden {
+  display: none;
+}
+
+.custom-date-switch-card {
+  padding: var(--spacing-sm) var(--spacing-md);
+  background: var(--bg-secondary);
+  border: 2px solid var(--border-secondary);
+  border-radius: var(--border-radius);
+  cursor: pointer;
+  transition: all var(--animation-normal) ease;
+  min-width: 120px;
+  text-align: center;
+}
+
+.custom-date-switch-card:hover {
+  border-color: var(--accent-primary);
+  background: var(--bg-tertiary);
+  transform: translateY(-2px);
+}
+
+.custom-date-switch-card.active {
+  border-color: var(--accent-primary);
+  background: var(--gradient-exam);
+  color: white;
+  box-shadow: var(--shadow-glow);
+}
+
+.custom-date-switch-card-name {
+  font-weight: 600;
+  font-size: 0.95rem;
+  margin-bottom: var(--spacing-xs);
+}
+
+.custom-date-switch-card-days {
+  font-size: 0.85rem;
+  opacity: 0.9;
+}
+
+.custom-time-display {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: var(--spacing-md);
+  margin: var(--spacing-xl) 0;
+  font-family: var(--font-primary);
+  flex-wrap: wrap;
+}
+
+.custom-time-unit {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-xs);
+}
+
+.custom-digit-container {
+  position: relative;
+  perspective: 1000px;
+}
+
+.custom-digit {
+  display: inline-flex;
+  width: 2.2em;
+  height: 1.6em;
+  background: var(--bg-secondary);
+  border: 3px solid;
+  border-image: var(--gradient-exam) 1;
+  border-radius: var(--border-radius);
+  align-items: center;
+  justify-content: center;
+  font-size: 5rem;
+  font-weight: 900;
+  color: transparent;
+  background: var(--gradient-exam);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  box-shadow: 0 0 30px rgba(255, 105, 180, 0.4);
+  position: relative;
+  overflow: hidden;
+  min-width: 130px;
+  min-height: 85px;
+}
+
+.custom-digit::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+  transition: left var(--animation-slow) ease;
+}
+
+.custom-digit.updating::before {
+  left: 100%;
+}
+
+.custom-unit-label {
+  font-size: 1.4rem;
+  color: var(--text-primary);
+  font-weight: 600;
+  margin-top: var(--spacing-xs);
+}
+
+.custom-unit-desc {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  font-weight: 400;
+  font-style: italic;
+}
+
+.custom-time-separator {
+  font-size: 5rem;
+  color: transparent;
+  background: var(--gradient-exam);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin: 0 var(--spacing-sm);
+  font-weight: 900;
+  animation: customPulse 2s ease-in-out infinite;
+}
+
+@keyframes customPulse {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.7;
+    transform: scale(1.1);
+  }
+}
+
+/* 自定义进度环 */
+.custom-progress-ring {
+  position: relative;
+  margin: var(--spacing-xl) 0;
+}
+
+.progress-ring {
+  transform: rotate(-90deg);
+}
+
+.progress-ring-background {
+  stroke: var(--border-secondary);
+  opacity: 0.3;
+}
+
+.progress-ring-circle {
+  stroke: url(#examGradient);
+  stroke-dasharray: 565.48;
+  stroke-dashoffset: 565.48;
+  transition: stroke-dashoffset 0.5s ease;
+  stroke-linecap: round;
+  filter: drop-shadow(0 0 10px rgba(255, 105, 180, 0.5));
+}
+
+.progress-ring-text {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+}
+
+.progress-percentage {
+  font-size: 2rem;
+  font-weight: 900;
+  color: transparent;
+  background: var(--gradient-exam);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.progress-label {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  margin-top: var(--spacing-xs);
+}
+
+/* 自定义鼓励语卡片 */
+.custom-motivation-card {
+  width: 100%;
+  max-width: 800px;
+  margin: var(--spacing-xl) auto;
+  padding: var(--spacing-lg) var(--spacing-xl);
+  background: var(--bg-card);
+  border: 2px solid var(--border-primary);
+  border-radius: var(--border-radius-lg);
+  box-shadow: var(--shadow-card);
+  position: relative;
+  overflow: hidden;
+}
+
+.custom-motivation-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: var(--gradient-exam);
+}
+
+.motivation-card-content {
+  font-size: 1.4rem;
+  color: var(--text-primary);
+  font-weight: 500;
+  font-style: italic;
+  line-height: 1.8;
+  text-align: center;
+  background: var(--gradient-exam);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: motivationGlow 3s ease-in-out infinite;
+  word-break: break-word;
+  padding: var(--spacing-sm) 0;
+}
+
+@keyframes motivationGlow {
+  0%, 100% {
+    filter: drop-shadow(0 0 5px rgba(255, 105, 180, 0.3));
+  }
+  50% {
+    filter: drop-shadow(0 0 15px rgba(255, 105, 180, 0.6));
+  }
+}
+
+/* 里程碑 */
+.custom-milestones {
+  display: flex;
+  justify-content: center;
+  gap: var(--spacing-md);
+  flex-wrap: wrap;
+  margin-top: var(--spacing-xl);
+}
+
+.custom-back-btn {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-sm) var(--spacing-lg);
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-secondary);
+  border-radius: var(--border-radius);
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: all var(--animation-normal) ease;
+  font-size: 1rem;
+  margin-top: var(--spacing-lg);
+}
+
+.custom-back-btn:hover {
+  border-color: var(--accent-primary);
+  background: var(--bg-tertiary);
+  transform: translateX(-4px);
+}
+
+/* 日期管理弹窗 */
+.custom-date-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: var(--bg-modal);
+  backdrop-filter: blur(10px);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-md);
+  opacity: 1;
+  visibility: visible;
+  transition: all var(--animation-normal) ease;
+}
+
+.custom-date-modal.hidden {
+  opacity: 0;
+  visibility: hidden;
+}
+
+.custom-date-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+  max-height: 60vh;
+  overflow-y: auto;
+  margin-bottom: var(--spacing-lg);
+}
+
+.custom-date-list.hidden {
+  display: none;
+}
+
+.custom-date-list-item {
+  background: var(--bg-card);
+  border: 1px solid var(--border-secondary);
+  border-radius: var(--border-radius);
+  padding: var(--spacing-md);
+  transition: all var(--animation-normal) ease;
+}
+
+.custom-date-list-item:hover {
+  border-color: var(--accent-primary);
+  background: var(--bg-tertiary);
+}
+
+.custom-date-list-item-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--spacing-sm);
+}
+
+.custom-date-list-item-name {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.custom-date-list-item-badge {
+  padding: var(--spacing-xs) var(--spacing-sm);
+  background: var(--gradient-exam);
+  color: white;
+  border-radius: var(--border-radius);
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.custom-date-list-item-info {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+  margin-bottom: var(--spacing-sm);
+}
+
+.info-row {
+  display: flex;
+  gap: var(--spacing-xs);
+  font-size: 0.9rem;
+}
+
+.custom-date-list-item-motivation {
+  padding: var(--spacing-sm);
+  background: var(--bg-tertiary);
+  border-radius: var(--border-radius);
+  color: var(--text-secondary);
+  font-style: italic;
+  font-size: 0.85rem;
+  margin-bottom: var(--spacing-sm);
+}
+
+.custom-date-list-item-actions {
+  display: flex;
+  gap: var(--spacing-sm);
+  justify-content: flex-end;
+}
+
+.btn-icon-small {
+  width: 32px;
+  height: 32px;
+  border: 1px solid var(--border-secondary);
+  background: var(--bg-secondary);
+  border-radius: var(--border-radius);
+  cursor: pointer;
+  transition: all var(--animation-normal) ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  color: var(--text-primary);
+}
+
+.btn-icon-small:hover {
+  border-color: var(--accent-primary);
+  background: var(--bg-tertiary);
+  transform: scale(1.1);
+}
+
+.btn-icon-small.danger:hover {
+  border-color: var(--accent-danger);
+  background: rgba(255, 71, 87, 0.1);
+}
+
+.custom-date-empty {
+  text-align: center;
+  padding: var(--spacing-xl);
+  color: var(--text-secondary);
+}
+
+.custom-date-empty.hidden {
+  display: none;
+}
+
+.custom-date-empty .empty-icon {
+  font-size: 3rem;
+  margin-bottom: var(--spacing-md);
+}
+
+.custom-date-empty .empty-text {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: var(--spacing-xs);
+}
+
+.custom-date-empty .empty-hint {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: center;
+  gap: var(--spacing-md);
+  padding-top: var(--spacing-md);
+  border-top: 1px solid var(--border-secondary);
+  flex-wrap: wrap;
+}
+
+.modal-actions .btn {
+  min-width: 140px;
+}
+
+/* 日期编辑表单弹窗 */
+.custom-date-edit-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: var(--bg-modal);
+  backdrop-filter: blur(10px);
+  z-index: 1001;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-md);
+  opacity: 1;
+  visibility: visible;
+  transition: all var(--animation-normal) ease;
+}
+
+.custom-date-edit-modal.hidden {
+  opacity: 0;
+  visibility: hidden;
+}
+
+.custom-date-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-lg);
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+}
+
+.form-group label {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  font-weight: 600;
+  color: var(--text-primary);
+  font-size: 0.95rem;
+}
+
+.label-icon {
+  font-size: 1.1rem;
+}
+
+.required {
+  color: var(--accent-danger);
+}
+
+.form-group input[type="text"],
+.form-group input[type="datetime-local"],
+.form-group textarea {
+  padding: var(--spacing-sm) var(--spacing-md);
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-secondary);
+  border-radius: var(--border-radius);
+  color: var(--text-primary);
+  font-size: 1rem;
+  font-family: var(--font-secondary);
+  transition: all var(--animation-normal) ease;
+}
+
+.form-group input:focus,
+.form-group textarea:focus {
+  outline: none;
+  border-color: var(--accent-primary);
+  box-shadow: 0 0 0 3px rgba(0, 212, 255, 0.1);
+}
+
+.form-group textarea {
+  resize: vertical;
+  min-height: 80px;
+}
+
+.form-hint {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  margin-top: var(--spacing-xs);
+}
+
+.form-actions {
+  display: flex;
+  gap: var(--spacing-md);
+  justify-content: flex-end;
+  padding-top: var(--spacing-md);
+  border-top: 1px solid var(--border-secondary);
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+  .custom-action-buttons {
+    flex-direction: column;
+    width: 100%;
+  }
+  
+  .custom-action-btn {
+    width: 100%;
+    min-width: auto;
+  }
+  
+  .custom-date-cards-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .custom-date-switcher {
+    flex-direction: column;
+  }
+  
+  .custom-date-switch-card {
+    width: 100%;
+  }
+  
+  .custom-time-display {
+    gap: var(--spacing-sm);
+  }
+  
+  .custom-digit {
+    font-size: 3.5rem;
+    min-width: 100px;
+    min-height: 70px;
+  }
+  
+  .custom-time-separator {
+    font-size: 3.5rem;
+  }
+  
+  .custom-title {
+    font-size: 2rem;
+  }
+  
+  .custom-icon {
+    font-size: 2rem;
+  }
+  
+  .custom-date-modal .modal-content,
+  .custom-date-edit-modal .modal-content {
+    width: 95%;
+    max-height: 90vh;
+    padding: var(--spacing-md);
+  }
+  
+  .custom-date-list {
+    max-height: 50vh;
+  }
+  
+  .form-actions {
+    flex-direction: column;
+  }
+  
+  .form-actions .btn {
+    width: 100%;
+  }
+  
+  .custom-motivation-card {
+    margin: var(--spacing-lg) var(--spacing-md);
+    padding: var(--spacing-md) var(--spacing-lg);
+  }
+  
+  .motivation-card-content {
+    font-size: 1.2rem;
+  }
+  
+  .custom-milestones {
+    margin-top: var(--spacing-lg);
+    gap: var(--spacing-sm);
+  }
+}
+
+/* 保留exam样式以兼容（向后兼容） */
 .exam-header {
   margin-bottom: var(--spacing-xl);
 }
@@ -4272,25 +5168,8 @@ body {
   animation: floatGently 3s ease-in-out infinite;
 }
 
-@keyframes floatGently {
-  0%, 100% {
-    transform: translateY(0px);
-  }
-  50% {
-    transform: translateY(-10px);
-  }
-}
-
 .exam-motivation {
   margin-bottom: var(--spacing-xl);
-}
-
-.motivation-text {
-  font-size: 1.3rem;
-  color: var(--text-primary);
-  margin-bottom: var(--spacing-sm);
-  font-weight: 500;
-  font-style: italic;
 }
 
 .exam-date {
@@ -4408,82 +5287,6 @@ body {
 .exam-progress-ring {
   position: relative;
   margin: var(--spacing-xl) 0;
-}
-
-.progress-ring {
-  transform: rotate(-90deg);
-}
-
-.progress-ring-background {
-  stroke: var(--border-secondary);
-  opacity: 0.3;
-}
-
-.progress-ring-circle {
-  stroke: url(#examGradient);
-  stroke-dasharray: 565.48;
-  stroke-dashoffset: 565.48;
-  transition: stroke-dashoffset 0.5s ease;
-  stroke-linecap: round;
-  filter: drop-shadow(0 0 10px rgba(255, 105, 180, 0.5));
-}
-
-.progress-ring-text {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  text-align: center;
-}
-
-.progress-percentage {
-  font-size: 2rem;
-  font-weight: 900;
-  color: transparent;
-  background: var(--gradient-exam);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-
-.progress-label {
-  font-size: 0.9rem;
-  color: var(--text-secondary);
-  margin-top: var(--spacing-xs);
-}
-
-/* 考研鼓励语 */
-.exam-encouragement {
-  text-align: center;
-  margin-top: var(--spacing-xl);
-}
-
-.encouragement-text {
-  font-size: 1.3rem;
-  color: var(--text-primary);
-  margin-bottom: var(--spacing-lg);
-  font-weight: 500;
-  background: var(--gradient-exam);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  animation: encouragementGlow 3s ease-in-out infinite;
-}
-
-@keyframes encouragementGlow {
-  0%, 100% {
-    filter: drop-shadow(0 0 5px rgba(255, 105, 180, 0.3));
-  }
-  50% {
-    filter: drop-shadow(0 0 15px rgba(255, 105, 180, 0.6));
-  }
-}
-
-.exam-milestones {
-  display: flex;
-  justify-content: center;
-  gap: var(--spacing-md);
-  flex-wrap: wrap;
 }
 
 .milestone {
