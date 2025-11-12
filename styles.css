@@ -739,7 +739,8 @@ body {
 .focus-mode,
 .clock-mode,
 .exam-mode,
-.rest-mode {
+.rest-mode,
+.stats-mode {
   display: none;
   width: 100%;
   text-align: center;
@@ -748,7 +749,8 @@ body {
 .focus-mode.active,
 .clock-mode.active,
 .exam-mode.active,
-.rest-mode.active {
+.rest-mode.active,
+.stats-mode.active {
   display: block;
   animation: fadeInUp var(--animation-slow) ease;
 }
@@ -3724,5 +3726,209 @@ body {
   
   .downloader-tips {
     font-size: 0.85rem;
+  }
+}
+
+/* ================================
+   统计页面样式
+   ================================ */
+
+.stats-mode {
+  display: none;
+  width: 100%;
+  text-align: center;
+}
+
+.stats-mode.active {
+  display: block;
+  animation: fadeInUp var(--animation-slow) ease;
+}
+
+.stats-container {
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+/* 统计卡片 */
+.stats-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: var(--spacing-lg);
+  margin-bottom: var(--spacing-xl);
+}
+
+.stat-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-secondary);
+  border-radius: var(--border-radius-lg);
+  padding: var(--spacing-xl);
+  backdrop-filter: blur(10px);
+  transition: all var(--animation-normal) ease;
+}
+
+.stat-card:hover {
+  transform: translateY(-5px);
+  box-shadow: var(--shadow-glow);
+  border-color: var(--accent-primary);
+}
+
+.stat-icon {
+  font-size: 3rem;
+  margin-bottom: var(--spacing-md);
+}
+
+.stat-value {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--accent-primary);
+  font-family: var(--font-primary);
+  margin-bottom: var(--spacing-sm);
+}
+
+.stat-label {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+}
+
+/* 图表网格 */
+.charts-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+  gap: var(--spacing-lg);
+  margin-bottom: var(--spacing-xl);
+}
+
+.chart-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-secondary);
+  border-radius: var(--border-radius-lg);
+  padding: var(--spacing-xl);
+  backdrop-filter: blur(10px);
+}
+
+.chart-title {
+  color: var(--text-primary);
+  font-size: 1.1rem;
+  margin-bottom: var(--spacing-md);
+  text-align: left;
+}
+
+.chart-container {
+  width: 100%;
+  height: 300px;
+}
+
+/* 使用记录 */
+.session-history {
+  background: var(--bg-card);
+  border: 1px solid var(--border-secondary);
+  border-radius: var(--border-radius-lg);
+  padding: var(--spacing-xl);
+  margin-bottom: var(--spacing-xl);
+  backdrop-filter: blur(10px);
+}
+
+.history-title {
+  color: var(--text-primary);
+  font-size: 1.2rem;
+  margin-bottom: var(--spacing-lg);
+  text-align: left;
+}
+
+.history-list {
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.history-item {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  padding: var(--spacing-md);
+  border-bottom: 1px solid var(--border-secondary);
+  transition: background var(--animation-fast) ease;
+}
+
+.history-item:hover {
+  background: var(--bg-tertiary);
+}
+
+.history-item:last-child {
+  border-bottom: none;
+}
+
+.history-icon {
+  font-size: 2rem;
+}
+
+.history-info {
+  flex: 1;
+  text-align: left;
+}
+
+.history-main {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  margin-bottom: var(--spacing-xs);
+}
+
+.history-type {
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.history-duration {
+  color: var(--accent-primary);
+  font-weight: 600;
+}
+
+.history-status {
+  font-size: 0.85rem;
+  padding: 2px 8px;
+  border-radius: 12px;
+}
+
+.history-status.completed {
+  background: rgba(0, 255, 136, 0.1);
+  color: var(--accent-success);
+}
+
+.history-status.stopped {
+  background: rgba(255, 71, 87, 0.1);
+  color: var(--accent-danger);
+}
+
+.history-time {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+.no-history {
+  padding: var(--spacing-xl);
+  color: var(--text-muted);
+  text-align: center;
+}
+
+/* 操作按钮 */
+.stats-actions {
+  display: flex;
+  justify-content: center;
+  gap: var(--spacing-md);
+}
+
+/* 响应式 */
+@media (max-width: 768px) {
+  .charts-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .stats-cards {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .chart-container {
+    height: 250px;
   }
 }

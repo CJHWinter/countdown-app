@@ -4,7 +4,7 @@
 
 class CountdownApp {
     constructor() {
-        this.currentMode = 'focus'; // 'focus' | 'rest' | 'exam' | 'clock'
+        this.currentMode = 'focus'; // 'focus' | 'rest' | 'exam' | 'clock' | 'stats'
         this.currentTheme = 'dark'; // 'dark' | 'light' | 'romantic' | 'warm' | 'forest' | 'ocean'
         this.currentDigitStyle = 'tech'; // 'tech' | 'cute' | 'elegant' | 'playful'
         this.isCountdownActive = false;
@@ -74,6 +74,11 @@ class CountdownApp {
         // 日期时间预览更新定时器
         this.datetimePreviewTimer = null;
         
+        // 使用统计系统
+        this.usageStats = this.loadUsageStats();
+        this.currentSession = null;
+        this.typeWriterTimer = null; // 打字机效果定时器
+        
         // 音乐播放器显示状态
         this.isMusicPlayerVisible = false;
         
@@ -85,6 +90,11 @@ class CountdownApp {
         this.currentVideoCategory = null;
         this.enableContinuousPlay = false; // 是否启用连续播放
         this.videoEventsSetup = false; // 标记视频事件是否已设置
+        
+        // 使用统计系统
+        this.usageStats = this.loadUsageStats();
+        this.currentSession = null;
+        this.typeWriterTimer = null;
         
         // 设置
         this.settings = {
@@ -137,10 +147,12 @@ class CountdownApp {
         this.elements.restModeBtn = document.getElementById('restModeBtn');
         this.elements.examModeBtn = document.getElementById('examModeBtn');
         this.elements.clockModeBtn = document.getElementById('clockModeBtn');
+        this.elements.statsModeBtn = document.getElementById('statsModeBtn');
         this.elements.focusMode = document.getElementById('focus-mode');
         this.elements.restMode = document.getElementById('rest-mode');
         this.elements.examMode = document.getElementById('exam-mode');
         this.elements.clockMode = document.getElementById('clock-mode');
+        this.elements.statsMode = document.getElementById('stats-mode');
         
         // 主题选择
         this.elements.themeBtn = document.getElementById('themeBtn');
@@ -467,26 +479,53 @@ class CountdownApp {
         this.elements.restModeBtn.classList.toggle('active', mode === 'rest');
         this.elements.examModeBtn.classList.toggle('active', mode === 'exam');
         this.elements.clockModeBtn.classList.toggle('active', mode === 'clock');
+        this.elements.statsModeBtn.classList.toggle('active', mode === 'stats');
         
         // 更新 ARIA 属性
         this.elements.focusModeBtn.setAttribute('aria-selected', mode === 'focus');
         this.elements.restModeBtn.setAttribute('aria-selected', mode === 'rest');
         this.elements.examModeBtn.setAttribute('aria-selected', mode === 'exam');
         this.elements.clockModeBtn.setAttribute('aria-selected', mode === 'clock');
+        this.elements.statsModeBtn.setAttribute('aria-selected', mode === 'stats');
         
         // 切换显示内容
         this.elements.focusMode.classList.toggle('active', mode === 'focus');
         this.elements.restMode.classList.toggle('active', mode === 'rest');
         this.elements.examMode.classList.toggle('active', mode === 'exam');
         this.elements.clockMode.classList.toggle('active', mode === 'clock');
+        this.elements.statsMode.classList.toggle('active', mode === 'stats');
         
-        // 停止当前模式的计时器
-        if (mode !== 'focus' && this.isCountdownActive) {
-            this.stopCountdown();
+        // 如果切换到统计页面，渲染统计内容
+        if (mode === 'stats') {
+            this.renderStatsPage();
         }
-        if (mode !== 'rest' && this.isRestCountdownActive) {
-            this.stopRestCountdown();
+        
+        // 如果切换回专注模式，且倒计时还在运行，显示倒计时界面
+        if (mode === 'focus' && this.isCountdownActive) {
+            this.elements.countdownSetup.classList.add('hidden');
+            this.elements.countdownDisplay.classList.remove('hidden');
+            // 立即更新一次倒计时显示，确保显示正确的时间
+            this.updateCountdown();
+        } else if (mode === 'focus' && !this.isCountdownActive) {
+            // 如果倒计时未运行，显示设置界面
+            this.elements.countdownSetup.classList.remove('hidden');
+            this.elements.countdownDisplay.classList.add('hidden');
         }
+        
+        // 如果切换回休息模式，且倒计时还在运行，显示倒计时界面
+        if (mode === 'rest' && this.isRestCountdownActive) {
+            this.elements.restSetup.classList.add('hidden');
+            this.elements.restCountdownDisplay.classList.remove('hidden');
+            // 立即更新一次倒计时显示，确保显示正确的时间
+            this.updateRestCountdown();
+        } else if (mode === 'rest' && !this.isRestCountdownActive) {
+            // 如果倒计时未运行，显示设置界面
+            this.elements.restSetup.classList.remove('hidden');
+            this.elements.restCountdownDisplay.classList.add('hidden');
+        }
+        
+        // 注意：切换模式时不停止倒计时，让倒计时在后台继续运行
+        // 用户可以随时切换回专注/休息模式查看倒计时状态
         
         // 启动考研倒计时
         if (mode === 'exam') {
@@ -664,6 +703,10 @@ class CountdownApp {
         this.isRestPaused = false;
         this.restPausedRemainingTime = 0;
         
+        // 记录会话开始
+        const plannedDuration = targetMinutes * 60;
+        this.startSession('rest', plannedDuration);
+        
         // 切换界面
         this.elements.restSetup.classList.add('hidden');
         this.elements.restCountdownDisplay.classList.remove('hidden');
@@ -733,6 +776,11 @@ class CountdownApp {
     }
     
     stopRestCountdown() {
+        // 记录会话结束（提前结束）
+        if (this.currentSession) {
+            this.endSession(false);
+        }
+        
         this.isRestCountdownActive = false;
         this.isRestPaused = false;
         this.restPausedRemainingTime = 0;
@@ -754,6 +802,11 @@ class CountdownApp {
     }
     
     completeRestCountdown() {
+        // 记录会话完成
+        if (this.currentSession) {
+            this.endSession(true);
+        }
+        
         this.isRestCountdownActive = false;
         this.isRestPaused = false;
         this.restPausedRemainingTime = 0;
@@ -770,6 +823,15 @@ class CountdownApp {
         this.elements.restProgressFill.style.width = '100%';
         this.elements.restProgressText.textContent = '100%';
         this.elements.pauseRestCountdown.innerHTML = '<span class="btn-icon">⏸️</span> 暂停';
+        
+        // 如果当前不在休息模式，自动切换回休息模式以显示完成提示
+        if (this.currentMode !== 'rest') {
+            this.switchMode('rest');
+        } else {
+            // 如果已经在休息模式，重置界面显示设置界面
+            this.elements.restSetup.classList.remove('hidden');
+            this.elements.restCountdownDisplay.classList.add('hidden');
+        }
         
         this.showToast('🎊 休息时间结束！准备开始新的专注吧！', 'success');
         
@@ -3163,6 +3225,10 @@ class CountdownApp {
         this.countdownStartTime = now.getTime();
         this.countdownTotalDuration = this.countdownEndTime - this.countdownStartTime;
         this.isCountdownActive = true;
+        
+        // 记录会话开始
+        const plannedDuration = Math.floor((targetDateTime - now) / 1000);
+        this.startSession('focus', plannedDuration);
         this.isPaused = false;
         this.pausedRemainingTime = 0;
         
@@ -3253,6 +3319,11 @@ class CountdownApp {
     }
     
     stopCountdown() {
+        // 记录会话结束（提前结束）
+        if (this.currentSession) {
+            this.endSession(false);
+        }
+        
         this.isCountdownActive = false;
         this.isPaused = false;
         this.pausedRemainingTime = 0;
@@ -3271,10 +3342,20 @@ class CountdownApp {
     }
     
     completeCountdown() {
+        // 记录会话完成
+        if (this.currentSession) {
+            this.endSession(true);
+        }
+        
         this.isCountdownActive = false;
         this.isPaused = false;
         this.pausedRemainingTime = 0;
         clearInterval(this.countdownInterval);
+        
+        // 如果当前不在专注模式，自动切换回专注模式以显示完成提示
+        if (this.currentMode !== 'focus') {
+            this.switchMode('focus');
+        }
         
         // 播放完成音效
         this.playSound('completion');
@@ -3888,6 +3969,12 @@ class CountdownApp {
         this.elements.restModeBtn.addEventListener('click', () => this.switchMode('rest'));
         this.elements.examModeBtn.addEventListener('click', () => this.switchMode('exam'));
         this.elements.clockModeBtn.addEventListener('click', () => this.switchMode('clock'));
+        this.elements.statsModeBtn.addEventListener('click', () => this.switchMode('stats'));
+        
+        // 统计页面按钮
+        document.getElementById('importStatsBtn')?.addEventListener('click', () => this.importStats());
+        document.getElementById('exportStatsBtn')?.addEventListener('click', () => this.exportStats());
+        document.getElementById('clearStatsBtn')?.addEventListener('click', () => this.clearStats());
         
         // 主题选择
         if (this.elements.themeDropdown) {
@@ -4448,6 +4535,1079 @@ class CountdownApp {
         this.checkDownloaderService();
         
         console.log('🔄 正在重试连接B站下载器服务...');
+    }
+    
+    // ================================
+    // 使用统计系统
+    // ================================
+    
+    loadUsageStats() {
+        const stored = localStorage.getItem('countdown_usage_stats');
+        if (stored) {
+            try {
+                return JSON.parse(stored);
+            } catch (e) {
+                console.error('加载统计数据失败:', e);
+            }
+        }
+        return {
+            sessions: [],
+            statistics: {
+                totalFocusTime: 0,
+                totalRestTime: 0,
+                totalSessions: 0,
+                completedSessions: 0,
+                completionRate: 0,
+                streakDays: 0,
+                lastUsedDate: null
+            }
+        };
+    }
+    
+    saveUsageStats() {
+        try {
+            localStorage.setItem('countdown_usage_stats', JSON.stringify(this.usageStats));
+        } catch (e) {
+            console.error('保存统计数据失败:', e);
+        }
+    }
+    
+    startSession(type, plannedDuration) {
+        this.currentSession = {
+            id: Date.now().toString(),
+            type: type, // 'focus' or 'rest'
+            startTime: new Date().toISOString(),
+            plannedDuration: plannedDuration, // 秒
+            music: this.currentMusic || null
+        };
+        console.log('会话开始:', this.currentSession);
+    }
+    
+    endSession(completed = true) {
+        if (!this.currentSession) return;
+        
+        const endTime = new Date();
+        const startTime = new Date(this.currentSession.startTime);
+        const actualDuration = Math.floor((endTime - startTime) / 1000);
+        
+        const session = {
+            ...this.currentSession,
+            endTime: endTime.toISOString(),
+            actualDuration: actualDuration,
+            completed: completed,
+            earlyStop: !completed
+        };
+        
+        // 保存会话记录
+        this.usageStats.sessions.push(session);
+        
+        // 更新统计数据
+        if (session.type === 'focus') {
+            this.usageStats.statistics.totalFocusTime += actualDuration;
+        } else {
+            this.usageStats.statistics.totalRestTime += actualDuration;
+        }
+        
+        this.usageStats.statistics.totalSessions++;
+        if (completed) {
+            this.usageStats.statistics.completedSessions++;
+        }
+        
+        this.usageStats.statistics.completionRate = 
+            (this.usageStats.statistics.completedSessions / this.usageStats.statistics.totalSessions * 100).toFixed(1);
+        
+        // 更新连续使用天数
+        this.updateStreakDays();
+        
+        // 保存到 localStorage
+        this.saveUsageStats();
+        
+        this.currentSession = null;
+        
+        console.log('会话已记录:', session);
+    }
+    
+    updateStreakDays() {
+        const today = new Date().toDateString();
+        const lastUsed = this.usageStats.statistics.lastUsedDate;
+        
+        if (!lastUsed) {
+            this.usageStats.statistics.streakDays = 1;
+        } else {
+            const lastDate = new Date(lastUsed);
+            const diffDays = Math.floor((new Date() - lastDate) / (1000 * 60 * 60 * 24));
+            
+            if (diffDays === 0) {
+                // 同一天，不变
+            } else if (diffDays === 1) {
+                // 连续，+1
+                this.usageStats.statistics.streakDays++;
+            } else {
+                // 中断，重置为1
+                this.usageStats.statistics.streakDays = 1;
+            }
+        }
+        
+        this.usageStats.statistics.lastUsedDate = today;
+    }
+    
+    // 渲染统计页面
+    renderStatsPage() {
+        this.updateStatsCards();
+        this.renderCharts();
+        this.renderSessionHistory();
+    }
+    
+    updateStatsCards() {
+        const stats = this.usageStats.statistics;
+        
+        // 转换时间为小时
+        const focusHours = (stats.totalFocusTime / 3600).toFixed(1);
+        const restHours = (stats.totalRestTime / 3600).toFixed(1);
+        
+        document.getElementById('totalFocusTime').textContent = `${focusHours}小时`;
+        document.getElementById('totalRestTime').textContent = `${restHours}小时`;
+        document.getElementById('completionRate').textContent = `${stats.completionRate}%`;
+        document.getElementById('streakDays').textContent = `${stats.streakDays}天`;
+    }
+    
+    renderCharts() {
+        this.renderDailyTrendChart();
+        this.renderFocusRestPieChart();
+        this.renderWeeklyBarChart();
+        this.renderHourDistributionChart();
+    }
+    
+    renderDailyTrendChart() {
+        const chartDom = document.getElementById('dailyTrendChart');
+        if (!chartDom) return;
+        
+        const chart = echarts.init(chartDom);
+        
+        // 获取最近7天的数据
+        const last7Days = this.getLast7DaysData();
+        
+        const option = {
+            tooltip: {
+                trigger: 'axis',
+                backgroundColor: 'rgba(26, 26, 26, 0.9)',
+                borderColor: '#00d4ff',
+                textStyle: { color: '#fff' }
+            },
+            xAxis: {
+                type: 'category',
+                data: last7Days.dates,
+                axisLine: { lineStyle: { color: '#666' } },
+                axisLabel: { color: '#b0b0b0' }
+            },
+            yAxis: {
+                type: 'value',
+                name: '分钟',
+                axisLine: { lineStyle: { color: '#666' } },
+                axisLabel: { color: '#b0b0b0' },
+                splitLine: { lineStyle: { color: '#333' } }
+            },
+            series: [{
+                data: last7Days.focusMinutes,
+                type: 'line',
+                smooth: true,
+                lineStyle: { color: '#00d4ff', width: 3 },
+                areaStyle: {
+                    color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{
+                        offset: 0,
+                        color: 'rgba(0, 212, 255, 0.3)'
+                    }, {
+                        offset: 1,
+                        color: 'rgba(0, 212, 255, 0.05)'
+                    }])
+                },
+                itemStyle: { color: '#00d4ff' }
+            }],
+            grid: { left: '10%', right: '5%', bottom: '15%', top: '10%' }
+        };
+        
+        chart.setOption(option);
+        
+        // 响应式
+        window.addEventListener('resize', () => chart.resize());
+    }
+    
+    renderFocusRestPieChart() {
+        const chartDom = document.getElementById('focusRestPieChart');
+        if (!chartDom) return;
+        
+        const chart = echarts.init(chartDom);
+        
+        const stats = this.usageStats.statistics;
+        
+        const option = {
+            tooltip: {
+                trigger: 'item',
+                backgroundColor: 'rgba(26, 26, 26, 0.9)',
+                borderColor: '#00d4ff',
+                textStyle: { color: '#fff' }
+            },
+            series: [{
+                type: 'pie',
+                radius: ['40%', '70%'],
+                avoidLabelOverlap: false,
+                label: {
+                    show: true,
+                    color: '#b0b0b0',
+                    formatter: '{b}: {d}%'
+                },
+                data: [
+                    { 
+                        value: Math.floor(stats.totalFocusTime / 60), 
+                        name: '专注时间',
+                        itemStyle: { color: '#00d4ff' }
+                    },
+                    { 
+                        value: Math.floor(stats.totalRestTime / 60), 
+                        name: '休息时间',
+                        itemStyle: { color: '#ff6b35' }
+                    }
+                ]
+            }]
+        };
+        
+        chart.setOption(option);
+        
+        window.addEventListener('resize', () => chart.resize());
+    }
+    
+    renderWeeklyBarChart() {
+        const chartDom = document.getElementById('weeklyBarChart');
+        if (!chartDom) return;
+        
+        const chart = echarts.init(chartDom);
+        
+        const weekData = this.getWeeklyData();
+        
+        const option = {
+            tooltip: {
+                trigger: 'axis',
+                backgroundColor: 'rgba(26, 26, 26, 0.9)',
+                borderColor: '#00d4ff',
+                textStyle: { color: '#fff' }
+            },
+            xAxis: {
+                type: 'category',
+                data: ['周一', '周二', '周三', '周四', '周五', '周六', '周日'],
+                axisLine: { lineStyle: { color: '#666' } },
+                axisLabel: { color: '#b0b0b0' }
+            },
+            yAxis: {
+                type: 'value',
+                name: '分钟',
+                axisLine: { lineStyle: { color: '#666' } },
+                axisLabel: { color: '#b0b0b0' },
+                splitLine: { lineStyle: { color: '#333' } }
+            },
+            series: [{
+                data: weekData,
+                type: 'bar',
+                itemStyle: {
+                    color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{
+                        offset: 0,
+                        color: '#00d4ff'
+                    }, {
+                        offset: 1,
+                        color: '#7b68ee'
+                    }])
+                },
+                barWidth: '60%'
+            }],
+            grid: { left: '10%', right: '5%', bottom: '15%', top: '10%' }
+        };
+        
+        chart.setOption(option);
+        
+        window.addEventListener('resize', () => chart.resize());
+    }
+    
+    renderHourDistributionChart() {
+        const chartDom = document.getElementById('hourDistributionChart');
+        if (!chartDom) return;
+        
+        const chart = echarts.init(chartDom);
+        
+        const hourData = this.getHourDistribution();
+        
+        const option = {
+            tooltip: {
+                trigger: 'axis',
+                backgroundColor: 'rgba(26, 26, 26, 0.9)',
+                borderColor: '#00d4ff',
+                textStyle: { color: '#fff' }
+            },
+            xAxis: {
+                type: 'category',
+                data: hourData.hours,
+                axisLine: { lineStyle: { color: '#666' } },
+                axisLabel: { color: '#b0b0b0', interval: 2 }
+            },
+            yAxis: {
+                type: 'value',
+                name: '次数',
+                axisLine: { lineStyle: { color: '#666' } },
+                axisLabel: { color: '#b0b0b0' },
+                splitLine: { lineStyle: { color: '#333' } }
+            },
+            series: [{
+                data: hourData.counts,
+                type: 'bar',
+                itemStyle: { color: '#ff6b35' },
+                barWidth: '50%'
+            }],
+            grid: { left: '10%', right: '5%', bottom: '15%', top: '10%' }
+        };
+        
+        chart.setOption(option);
+        
+        window.addEventListener('resize', () => chart.resize());
+    }
+    
+    // 数据处理方法
+    getLast7DaysData() {
+        const dates = [];
+        const focusMinutes = [];
+        
+        for (let i = 6; i >= 0; i--) {
+            const date = new Date();
+            date.setDate(date.getDate() - i);
+            const dateStr = date.toDateString();
+            
+            dates.push(`${date.getMonth() + 1}/${date.getDate()}`);
+            
+            // 计算当天的专注时长
+            const dayTotal = this.usageStats.sessions
+                .filter(s => new Date(s.startTime).toDateString() === dateStr && s.type === 'focus')
+                .reduce((sum, s) => sum + s.actualDuration, 0);
+            
+            focusMinutes.push(Math.floor(dayTotal / 60));
+        }
+        
+        return { dates, focusMinutes };
+    }
+    
+    getWeeklyData() {
+        const weekData = [0, 0, 0, 0, 0, 0, 0]; // 周一到周日
+        
+        this.usageStats.sessions.forEach(session => {
+            if (session.type === 'focus') {
+                const day = new Date(session.startTime).getDay();
+                const dayIndex = day === 0 ? 6 : day - 1; // 转换为周一=0
+                weekData[dayIndex] += Math.floor(session.actualDuration / 60);
+            }
+        });
+        
+        return weekData;
+    }
+    
+    getHourDistribution() {
+        const hours = [];
+        const counts = Array(24).fill(0);
+        
+        this.usageStats.sessions.forEach(session => {
+            const hour = new Date(session.startTime).getHours();
+            counts[hour]++;
+        });
+        
+        // 显示所有24小时
+        for (let i = 0; i < 24; i++) {
+            hours.push(`${i}:00`);
+        }
+        
+        return { hours, counts };
+    }
+    
+    renderSessionHistory() {
+        const listEl = document.getElementById('sessionHistoryList');
+        if (!listEl) return;
+        
+        const recentSessions = this.usageStats.sessions.slice(-20).reverse();
+        
+        if (recentSessions.length === 0) {
+            listEl.innerHTML = '<div class="no-history">暂无使用记录</div>';
+            return;
+        }
+        
+        listEl.innerHTML = recentSessions.map(session => {
+            const startTime = new Date(session.startTime);
+            const duration = Math.floor(session.actualDuration / 60);
+            const typeIcon = session.type === 'focus' ? '🎯' : '🌸';
+            const typeName = session.type === 'focus' ? '专注' : '休息';
+            const statusIcon = session.completed ? '✅' : '⏹️';
+            const statusText = session.completed ? '完成' : '提前结束';
+            
+            return `
+                <div class="history-item">
+                    <div class="history-icon">${typeIcon}</div>
+                    <div class="history-info">
+                        <div class="history-main">
+                            <span class="history-type">${typeName}</span>
+                            <span class="history-duration">${duration}分钟</span>
+                            <span class="history-status ${session.completed ? 'completed' : 'stopped'}">${statusIcon} ${statusText}</span>
+                        </div>
+                        <div class="history-time">${startTime.toLocaleString('zh-CN')}</div>
+                    </div>
+                </div>
+            `;
+        }).join('');
+    }
+    
+    exportStats() {
+        const dataStr = JSON.stringify(this.usageStats, null, 2);
+        const dataBlob = new Blob([dataStr], { type: 'application/json' });
+        const url = URL.createObjectURL(dataBlob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `countdown-stats-${new Date().toISOString().split('T')[0]}.json`;
+        link.click();
+        URL.revokeObjectURL(url);
+        this.showToast('数据已导出');
+    }
+    
+    // ================================
+    // 使用统计系统
+    // ================================
+    
+    loadUsageStats() {
+        const stored = localStorage.getItem('countdown_usage_stats');
+        if (stored) {
+            try {
+                return JSON.parse(stored);
+            } catch (e) {
+                console.warn('统计数据解析失败，使用默认值:', e);
+            }
+        }
+        return {
+            sessions: [],
+            statistics: {
+                totalFocusTime: 0,
+                totalRestTime: 0,
+                totalSessions: 0,
+                completedSessions: 0,
+                completionRate: 0,
+                streakDays: 0,
+                lastUsedDate: null
+            }
+        };
+    }
+    
+    saveUsageStats() {
+        localStorage.setItem('countdown_usage_stats', JSON.stringify(this.usageStats));
+    }
+    
+    startSession(type, plannedDuration) {
+        this.currentSession = {
+            id: Date.now().toString(),
+            type: type, // 'focus' or 'rest'
+            startTime: new Date().toISOString(),
+            plannedDuration: plannedDuration, // 秒
+            music: this.selectedStudyMusic || this.selectedRestMusic || null
+        };
+    }
+    
+    endSession(completed = true) {
+        if (!this.currentSession) return;
+        
+        const endTime = new Date();
+        const startTime = new Date(this.currentSession.startTime);
+        const actualDuration = Math.floor((endTime - startTime) / 1000);
+        
+        const session = {
+            ...this.currentSession,
+            endTime: endTime.toISOString(),
+            actualDuration: actualDuration,
+            completed: completed,
+            earlyStop: !completed
+        };
+        
+        // 保存会话记录
+        this.usageStats.sessions.push(session);
+        
+        // 更新统计数据
+        if (session.type === 'focus') {
+            this.usageStats.statistics.totalFocusTime += actualDuration;
+        } else {
+            this.usageStats.statistics.totalRestTime += actualDuration;
+        }
+        
+        this.usageStats.statistics.totalSessions++;
+        if (completed) {
+            this.usageStats.statistics.completedSessions++;
+        }
+        
+        this.usageStats.statistics.completionRate = 
+            this.usageStats.statistics.totalSessions > 0 
+                ? parseFloat((this.usageStats.statistics.completedSessions / this.usageStats.statistics.totalSessions * 100).toFixed(1))
+                : 0;
+        
+        // 更新连续使用天数
+        this.updateStreakDays();
+        
+        // 保存到 localStorage
+        this.saveUsageStats();
+        
+        this.currentSession = null;
+        
+        console.log('会话已记录:', session);
+    }
+    
+    updateStreakDays() {
+        const today = new Date().toDateString();
+        const lastUsed = this.usageStats.statistics.lastUsedDate;
+        
+        if (!lastUsed) {
+            this.usageStats.statistics.streakDays = 1;
+        } else {
+            const lastDate = new Date(lastUsed);
+            const diffDays = Math.floor((new Date() - lastDate) / (1000 * 60 * 60 * 24));
+            
+            if (diffDays === 0) {
+                // 同一天，不变
+            } else if (diffDays === 1) {
+                // 连续，+1
+                this.usageStats.statistics.streakDays++;
+            } else {
+                // 中断，重置为1
+                this.usageStats.statistics.streakDays = 1;
+            }
+        }
+        
+        this.usageStats.statistics.lastUsedDate = today;
+    }
+    
+    renderStatsPage() {
+        if (!window.echarts) {
+            console.error('ECharts未加载');
+            return;
+        }
+        this.updateStatsCards();
+        this.renderCharts();
+        this.renderSessionHistory();
+    }
+    
+    updateStatsCards() {
+        const stats = this.usageStats.statistics;
+        
+        // 转换时间为小时
+        const focusHours = (stats.totalFocusTime / 3600).toFixed(1);
+        const restHours = (stats.totalRestTime / 3600).toFixed(1);
+        
+        const totalFocusEl = document.getElementById('totalFocusTime');
+        const totalRestEl = document.getElementById('totalRestTime');
+        const completionRateEl = document.getElementById('completionRate');
+        const streakDaysEl = document.getElementById('streakDays');
+        
+        if (totalFocusEl) totalFocusEl.textContent = `${focusHours}小时`;
+        if (totalRestEl) totalRestEl.textContent = `${restHours}小时`;
+        if (completionRateEl) completionRateEl.textContent = `${stats.completionRate}%`;
+        if (streakDaysEl) streakDaysEl.textContent = `${stats.streakDays}天`;
+    }
+    
+    renderCharts() {
+        this.renderDailyTrendChart();
+        this.renderFocusRestPieChart();
+        this.renderWeeklyBarChart();
+        this.renderHourDistributionChart();
+    }
+    
+    renderDailyTrendChart() {
+        const chartEl = document.getElementById('dailyTrendChart');
+        if (!chartEl) return;
+        
+        const chart = echarts.init(chartEl);
+        const last7Days = this.getLast7DaysData();
+        
+        const option = {
+            tooltip: {
+                trigger: 'axis',
+                backgroundColor: 'rgba(26, 26, 26, 0.9)',
+                borderColor: '#00d4ff',
+                textStyle: { color: '#fff' }
+            },
+            xAxis: {
+                type: 'category',
+                data: last7Days.dates,
+                axisLine: { lineStyle: { color: '#666' } },
+                axisLabel: { color: '#b0b0b0' }
+            },
+            yAxis: {
+                type: 'value',
+                name: '分钟',
+                axisLine: { lineStyle: { color: '#666' } },
+                axisLabel: { color: '#b0b0b0' },
+                splitLine: { lineStyle: { color: '#333' } }
+            },
+            series: [{
+                data: last7Days.focusMinutes,
+                type: 'line',
+                smooth: true,
+                lineStyle: { color: '#00d4ff', width: 3 },
+                areaStyle: {
+                    color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{
+                        offset: 0,
+                        color: 'rgba(0, 212, 255, 0.3)'
+                    }, {
+                        offset: 1,
+                        color: 'rgba(0, 212, 255, 0.05)'
+                    }])
+                },
+                itemStyle: { color: '#00d4ff' }
+            }],
+            grid: { left: '10%', right: '5%', bottom: '15%', top: '10%' }
+        };
+        
+        chart.setOption(option);
+        window.addEventListener('resize', () => chart.resize());
+    }
+    
+    renderFocusRestPieChart() {
+        const chartEl = document.getElementById('focusRestPieChart');
+        if (!chartEl) return;
+        
+        const chart = echarts.init(chartEl);
+        const stats = this.usageStats.statistics;
+        
+        const option = {
+            tooltip: {
+                trigger: 'item',
+                backgroundColor: 'rgba(26, 26, 26, 0.9)',
+                borderColor: '#00d4ff',
+                textStyle: { color: '#fff' }
+            },
+            series: [{
+                type: 'pie',
+                radius: ['40%', '70%'],
+                avoidLabelOverlap: false,
+                label: {
+                    show: true,
+                    color: '#b0b0b0',
+                    formatter: '{b}: {d}%'
+                },
+                data: [
+                    { 
+                        value: Math.floor(stats.totalFocusTime / 60), 
+                        name: '专注时间',
+                        itemStyle: { color: '#00d4ff' }
+                    },
+                    { 
+                        value: Math.floor(stats.totalRestTime / 60), 
+                        name: '休息时间',
+                        itemStyle: { color: '#ff6b35' }
+                    }
+                ]
+            }]
+        };
+        
+        chart.setOption(option);
+        window.addEventListener('resize', () => chart.resize());
+    }
+    
+    renderWeeklyBarChart() {
+        const chartEl = document.getElementById('weeklyBarChart');
+        if (!chartEl) return;
+        
+        const chart = echarts.init(chartEl);
+        const weekData = this.getWeeklyData();
+        
+        const option = {
+            tooltip: {
+                trigger: 'axis',
+                backgroundColor: 'rgba(26, 26, 26, 0.9)',
+                borderColor: '#00d4ff',
+                textStyle: { color: '#fff' }
+            },
+            xAxis: {
+                type: 'category',
+                data: ['周一', '周二', '周三', '周四', '周五', '周六', '周日'],
+                axisLine: { lineStyle: { color: '#666' } },
+                axisLabel: { color: '#b0b0b0' }
+            },
+            yAxis: {
+                type: 'value',
+                name: '分钟',
+                axisLine: { lineStyle: { color: '#666' } },
+                axisLabel: { color: '#b0b0b0' },
+                splitLine: { lineStyle: { color: '#333' } }
+            },
+            series: [{
+                data: weekData,
+                type: 'bar',
+                itemStyle: {
+                    color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{
+                        offset: 0,
+                        color: '#00d4ff'
+                    }, {
+                        offset: 1,
+                        color: '#7b68ee'
+                    }])
+                },
+                barWidth: '60%'
+            }],
+            grid: { left: '10%', right: '5%', bottom: '15%', top: '10%' }
+        };
+        
+        chart.setOption(option);
+        window.addEventListener('resize', () => chart.resize());
+    }
+    
+    renderHourDistributionChart() {
+        const chartEl = document.getElementById('hourDistributionChart');
+        if (!chartEl) return;
+        
+        const chart = echarts.init(chartEl);
+        const hourData = this.getHourDistribution();
+        
+        const option = {
+            tooltip: {
+                trigger: 'axis',
+                backgroundColor: 'rgba(26, 26, 26, 0.9)',
+                borderColor: '#00d4ff',
+                textStyle: { color: '#fff' }
+            },
+            xAxis: {
+                type: 'category',
+                data: hourData.hours,
+                axisLine: { lineStyle: { color: '#666' } },
+                axisLabel: { color: '#b0b0b0', rotate: 45 }
+            },
+            yAxis: {
+                type: 'value',
+                name: '次数',
+                axisLine: { lineStyle: { color: '#666' } },
+                axisLabel: { color: '#b0b0b0' },
+                splitLine: { lineStyle: { color: '#333' } }
+            },
+            series: [{
+                data: hourData.counts,
+                type: 'bar',
+                itemStyle: { color: '#ff6b35' },
+                barWidth: '50%'
+            }],
+            grid: { left: '10%', right: '5%', bottom: '20%', top: '10%' }
+        };
+        
+        chart.setOption(option);
+        window.addEventListener('resize', () => chart.resize());
+    }
+    
+    getLast7DaysData() {
+        const dates = [];
+        const focusMinutes = [];
+        
+        for (let i = 6; i >= 0; i--) {
+            const date = new Date();
+            date.setDate(date.getDate() - i);
+            const dateStr = date.toDateString();
+            
+            dates.push(`${date.getMonth() + 1}/${date.getDate()}`);
+            
+            // 计算当天的专注时长
+            const dayTotal = this.usageStats.sessions
+                .filter(s => new Date(s.startTime).toDateString() === dateStr && s.type === 'focus')
+                .reduce((sum, s) => sum + s.actualDuration, 0);
+            
+            focusMinutes.push(Math.floor(dayTotal / 60));
+        }
+        
+        return { dates, focusMinutes };
+    }
+    
+    getWeeklyData() {
+        const weekData = [0, 0, 0, 0, 0, 0, 0]; // 周一到周日
+        
+        this.usageStats.sessions.forEach(session => {
+            if (session.type === 'focus') {
+                const day = new Date(session.startTime).getDay();
+                const dayIndex = day === 0 ? 6 : day - 1; // 转换为周一=0
+                weekData[dayIndex] += Math.floor(session.actualDuration / 60);
+            }
+        });
+        
+        return weekData;
+    }
+    
+    getHourDistribution() {
+        const hours = [];
+        const counts = Array(24).fill(0);
+        
+        this.usageStats.sessions.forEach(session => {
+            const hour = new Date(session.startTime).getHours();
+            counts[hour]++;
+        });
+        
+        // 只显示有数据的时段
+        for (let i = 0; i < 24; i++) {
+            hours.push(`${i}:00`);
+        }
+        
+        return { hours, counts };
+    }
+    
+    renderSessionHistory() {
+        const listEl = document.getElementById('sessionHistoryList');
+        if (!listEl) return;
+        
+        const recentSessions = this.usageStats.sessions.slice(-20).reverse();
+        
+        if (recentSessions.length === 0) {
+            listEl.innerHTML = '<div class="no-history">暂无使用记录</div>';
+            return;
+        }
+        
+        listEl.innerHTML = recentSessions.map(session => {
+            const startTime = new Date(session.startTime);
+            const duration = Math.floor(session.actualDuration / 60);
+            const typeIcon = session.type === 'focus' ? '🎯' : '🌸';
+            const typeName = session.type === 'focus' ? '专注' : '休息';
+            const statusIcon = session.completed ? '✅' : '⏹️';
+            const statusText = session.completed ? '完成' : '提前结束';
+            
+            return `
+                <div class="history-item">
+                    <div class="history-icon">${typeIcon}</div>
+                    <div class="history-info">
+                        <div class="history-main">
+                            <span class="history-type">${typeName}</span>
+                            <span class="history-duration">${duration}分钟</span>
+                            <span class="history-status ${session.completed ? 'completed' : 'stopped'}">${statusIcon} ${statusText}</span>
+                        </div>
+                        <div class="history-time">${startTime.toLocaleString('zh-CN')}</div>
+                    </div>
+                </div>
+            `;
+        }).join('');
+    }
+    
+    exportStats() {
+        const dataStr = JSON.stringify(this.usageStats, null, 2);
+        const dataBlob = new Blob([dataStr], { type: 'application/json' });
+        const url = URL.createObjectURL(dataBlob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `countdown-stats-${new Date().toISOString().split('T')[0]}.json`;
+        link.click();
+        URL.revokeObjectURL(url);
+        this.showToast('数据已导出');
+    }
+    
+    importStats() {
+        // 创建文件输入元素
+        const input = document.createElement('input');
+        input.type = 'file';
+        input.accept = '.json';
+        input.style.display = 'none';
+        
+        input.onchange = (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                try {
+                    const importedData = JSON.parse(event.target.result);
+                    
+                    // 验证数据格式
+                    if (!this.validateStatsData(importedData)) {
+                        this.showToast('数据格式不正确，请检查文件', 'error');
+                        return;
+                    }
+                    
+                    // 询问用户如何处理
+                    const action = confirm(
+                        '导入数据选项：\n\n' +
+                        '点击"确定"：覆盖现有数据（将替换所有当前数据）\n' +
+                        '点击"取消"：合并数据（保留现有数据，添加新数据）\n\n' +
+                        '请选择处理方式：'
+                    );
+                    
+                    if (action) {
+                        // 覆盖模式
+                        this.usageStats = importedData;
+                        this.showToast('数据已覆盖导入');
+                    } else {
+                        // 合并模式
+                        const mergedCount = this.mergeStatsData(importedData);
+                        this.showToast(`数据已合并导入，新增 ${mergedCount} 条记录`);
+                    }
+                    
+                    // 重新计算统计数据
+                    this.recalculateStatistics();
+                    
+                    // 保存并刷新页面
+                    this.saveUsageStats();
+                    this.renderStatsPage();
+                    
+                } catch (error) {
+                    console.error('导入失败:', error);
+                    this.showToast('文件解析失败，请检查文件格式', 'error');
+                }
+            };
+            
+            reader.onerror = () => {
+                this.showToast('文件读取失败', 'error');
+            };
+            
+            reader.readAsText(file);
+        };
+        
+        // 触发文件选择
+        document.body.appendChild(input);
+        input.click();
+        document.body.removeChild(input);
+    }
+    
+    validateStatsData(data) {
+        // 验证数据格式
+        if (!data || typeof data !== 'object') {
+            console.warn('数据格式错误：不是对象');
+            return false;
+        }
+        
+        if (!Array.isArray(data.sessions)) {
+            console.warn('数据格式错误：sessions不是数组');
+            return false;
+        }
+        
+        if (!data.statistics || typeof data.statistics !== 'object') {
+            console.warn('数据格式错误：statistics不是对象');
+            return false;
+        }
+        
+        // 验证必需字段
+        const requiredStatsFields = [
+            'totalFocusTime', 'totalRestTime', 'totalSessions',
+            'completedSessions', 'completionRate', 'streakDays'
+        ];
+        
+        for (const field of requiredStatsFields) {
+            if (!(field in data.statistics)) {
+                console.warn(`数据格式错误：缺少字段 ${field}`);
+                return false;
+            }
+        }
+        
+        // 验证会话记录格式
+        for (const session of data.sessions) {
+            if (!session.id || !session.type || !session.startTime) {
+                console.warn('数据格式错误：会话记录缺少必需字段');
+                return false;
+            }
+        }
+        
+        return true;
+    }
+    
+    mergeStatsData(importedData) {
+        // 合并会话记录（避免重复）
+        const existingIds = new Set(this.usageStats.sessions.map(s => s.id));
+        const newSessions = importedData.sessions.filter(s => !existingIds.has(s.id));
+        
+        // 合并会话记录
+        this.usageStats.sessions = [
+            ...this.usageStats.sessions,
+            ...newSessions
+        ].sort((a, b) => new Date(b.startTime) - new Date(a.startTime)); // 按时间倒序
+        
+        return newSessions.length;
+    }
+    
+    recalculateStatistics() {
+        // 重新计算所有统计数据
+        const stats = {
+            totalFocusTime: 0,
+            totalRestTime: 0,
+            totalSessions: this.usageStats.sessions.length,
+            completedSessions: 0,
+            completionRate: 0,
+            streakDays: 0,
+            lastUsedDate: null
+        };
+        
+        // 计算总时长和完成数
+        this.usageStats.sessions.forEach(session => {
+            const duration = session.actualDuration || 0;
+            
+            if (session.type === 'focus') {
+                stats.totalFocusTime += duration;
+            } else if (session.type === 'rest') {
+                stats.totalRestTime += duration;
+            }
+            
+            if (session.completed) {
+                stats.completedSessions++;
+            }
+        });
+        
+        // 计算完成率
+        stats.completionRate = stats.totalSessions > 0
+            ? parseFloat((stats.completedSessions / stats.totalSessions * 100).toFixed(1))
+            : 0;
+        
+        // 重新计算连续天数
+        if (this.usageStats.sessions.length > 0) {
+            // 找到最早和最晚的使用日期
+            const dates = this.usageStats.sessions
+                .map(s => new Date(s.startTime).toDateString())
+                .sort();
+            
+            const uniqueDates = [...new Set(dates)];
+            let maxStreak = 0;
+            let currentStreak = 0;
+            let lastDate = null;
+            
+            for (const dateStr of uniqueDates) {
+                const date = new Date(dateStr);
+                
+                if (!lastDate) {
+                    currentStreak = 1;
+                } else {
+                    const diffDays = Math.floor((date - lastDate) / (1000 * 60 * 60 * 24));
+                    if (diffDays === 1) {
+                        currentStreak++;
+                    } else {
+                        maxStreak = Math.max(maxStreak, currentStreak);
+                        currentStreak = 1;
+                    }
+                }
+                
+                lastDate = date;
+            }
+            
+            stats.streakDays = Math.max(maxStreak, currentStreak);
+            
+            // 更新最后使用日期
+            if (uniqueDates.length > 0) {
+                stats.lastUsedDate = uniqueDates[uniqueDates.length - 1];
+            }
+        }
+        
+        // 更新统计数据
+        this.usageStats.statistics = stats;
+    }
+    
+    clearStats() {
+        if (confirm('确定要清除所有使用数据吗？此操作不可恢复！')) {
+            this.usageStats = {
+                sessions: [],
+                statistics: {
+                    totalFocusTime: 0,
+                    totalRestTime: 0,
+                    totalSessions: 0,
+                    completedSessions: 0,
+                    completionRate: 0,
+                    streakDays: 0,
+                    lastUsedDate: null
+                }
+            };
+            this.saveUsageStats();
+            this.renderStatsPage();
+            this.showToast('数据已清除');
+        }
     }
 }
 

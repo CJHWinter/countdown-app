@@ -93,7 +93,7 @@ if %errorlevel%==0 (
         echo Close backend window to stop backend
         echo.
         echo ========================================
-        echo.
+    echo.
         node server.js
         goto end
     )
