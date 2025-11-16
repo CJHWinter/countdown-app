@@ -4077,17 +4077,12 @@ class CountdownApp {
         
         const selectedMusic = restMusic[index];
         
-        // 检查是否是视频文件
-        const isVideo = selectedMusic.type === 'video' || selectedMusic.format === 'mp4' || selectedMusic.file.toLowerCase().endsWith('.mp4');
-        
-        if (isVideo) {
-            // 视频文件：打开视频播放器
-            this.openVideoPlayer(selectedMusic, 'rest', false);
-            this.showToast(`📹 打开视频: ${selectedMusic.name}`);
-            return;
+        // 如果正在播放，先暂停当前播放（确保平滑切换）
+        if (this.isVideoPlaying && this.elements.videoPlayer) {
+            this.elements.videoPlayer.pause();
+            this.isVideoPlaying = false;
         }
         
-        // 音频文件：使用原有逻辑
         // 更新选中状态
         this.selectedRestMusic = selectedMusic;
         
@@ -4095,19 +4090,16 @@ class CountdownApp {
         this.currentPlaylist = restMusic;
         this.currentMusicIndex = index;
         
-        // 立即播放音乐（休息倒计时中点击音乐直接播放）
-        try {
-            await this.playMusicWithRetry(selectedMusic, 'rest', false);
-            this.showToast(`🎵 正在播放: ${selectedMusic.name}`);
-            
-            // 更新UI
-            this.updateRestCountdownMusicUI();
-            this.updateMusicUI(); // 更新主音乐播放器的歌曲名称显示
-            this.updateMusicToggleVisibility();
-        } catch (error) {
-            console.error('播放音乐失败:', error);
-            this.showToast('播放失败，请检查音乐文件', 'error');
-        }
+        // 所有音乐（包括音频和视频）都使用统一的视频播放器模式
+        // 休息模式中切换音乐时，启用连续播放（和开始休息时的播放模式一致）
+        // autoPlay=true: 自动播放新选择的音乐
+        // continuousPlay=true: 启用连续播放模式（播放完当前音乐后自动播放下一首）
+        this.openVideoPlayer(selectedMusic, 'rest', true, true);
+        
+        // 更新UI
+        this.updateRestCountdownMusicUI();
+        this.updateMusicUI(); // 更新主音乐播放器的歌曲名称显示
+        this.updateMusicToggleVisibility();
     }
     
     updateRestCountdownMusicUI() {

@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "generatedAt": "2025-11-15T10:24:17.130Z",
+  "generatedAt": "2025-11-15T18:06:19.372Z",
   "generatedBy": "generate-music-list.js",
   "study": [
     {
@@ -116,6 +116,14 @@
       "type": "video"
     },
     {
+      "name": "4K Hi-Res梁博 - 出现又离开",
+      "file": "music/学习/4K Hi-Res梁博 - 出现又离开.mp4",
+      "duration": "未知",
+      "format": "mp4",
+      "fileSize": 106106601,
+      "type": "video"
+    },
+    {
       "name": "4K超清周杰伦 - 爱你没差 MV 2160P修复版",
       "file": "music/学习/4K超清周杰伦 - 爱你没差 MV 2160P修复版.mp4",
       "duration": "未知",
@@ -129,6 +137,14 @@
       "duration": "未知",
       "format": "mp4",
       "fileSize": 20844406,
+      "type": "video"
+    },
+    {
+      "name": "安安静静地听认认真真地活Sacred Play Secret Place",
+      "file": "music/学习/安安静静地听认认真真地活Sacred Play Secret Place.mp4",
+      "duration": "未知",
+      "format": "mp4",
+      "fileSize": 18800768,
       "type": "video"
     },
     {
@@ -289,6 +305,14 @@
       "duration": "未知",
       "format": "mp4",
       "fileSize": 12405657,
+      "type": "video"
+    },
+    {
+      "name": "夏日神曲限时返场Episode 33 - She Her Her Hers",
+      "file": "music/学习/夏日神曲限时返场Episode 33 - She Her Her Hers.mp4",
+      "duration": "未知",
+      "format": "mp4",
+      "fileSize": 10573416,
       "type": "video"
     },
     {
@@ -1039,8 +1063,8 @@
     }
   ],
   "summary": {
-    "studyCount": 81,
+    "studyCount": 84,
     "restCount": 48,
-    "totalCount": 129
+    "totalCount": 132
   }
 }
