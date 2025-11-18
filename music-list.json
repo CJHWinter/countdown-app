@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "generatedAt": "2025-11-15T18:06:19.372Z",
+  "generatedAt": "2025-11-18T09:17:56.211Z",
   "generatedBy": "generate-music-list.js",
   "study": [
     {
@@ -124,6 +124,38 @@
       "type": "video"
     },
     {
+      "name": "4K30FPS修复周杰伦 - 听妈妈的话 MV修复版",
+      "file": "music/学习/4K30FPS修复周杰伦 - 听妈妈的话 MV修复版.mp4",
+      "duration": "未知",
+      "format": "mp4",
+      "fileSize": 40560386,
+      "type": "video"
+    },
+    {
+      "name": "4K60P周董把倒带唱错词了但照样好听 蔡依林原唱",
+      "file": "music/学习/4K60P周董把倒带唱错词了但照样好听 蔡依林原唱.mp4",
+      "duration": "未知",
+      "format": "mp4",
+      "fileSize": 47991008,
+      "type": "video"
+    },
+    {
+      "name": "4K60P周董唱完搁浅后自夸背词功力慢慢进步下一秒借口光速打脸",
+      "file": "music/学习/4K60P周董唱完搁浅后自夸背词功力慢慢进步下一秒借口光速打脸.mp4",
+      "duration": "未知",
+      "format": "mp4",
+      "fileSize": 36674608,
+      "type": "video"
+    },
+    {
+      "name": "4K60P最长的电影很难唱好的再给我两分钟看看周董唱得怎么样",
+      "file": "music/学习/4K60P最长的电影很难唱好的再给我两分钟看看周董唱得怎么样.mp4",
+      "duration": "未知",
+      "format": "mp4",
+      "fileSize": 41015951,
+      "type": "video"
+    },
+    {
       "name": "4K超清周杰伦 - 爱你没差 MV 2160P修复版",
       "file": "music/学习/4K超清周杰伦 - 爱你没差 MV 2160P修复版.mp4",
       "duration": "未知",
@@ -137,6 +169,30 @@
       "duration": "未知",
       "format": "mp4",
       "fileSize": 20844406,
+      "type": "video"
+    },
+    {
+      "name": "4K修复周杰伦 - 暗号 MV",
+      "file": "music/学习/4K修复周杰伦 - 暗号 MV.mp4",
+      "duration": "未知",
+      "format": "mp4",
+      "fileSize": 23752391,
+      "type": "video"
+    },
+    {
+      "name": "4K修复周杰伦 - 断了的弦 MV电影寻找周杰伦片尾曲 2160P修复版",
+      "file": "music/学习/4K修复周杰伦 - 断了的弦 MV电影寻找周杰伦片尾曲 2160P修复版.mp4",
+      "duration": "未知",
+      "format": "mp4",
+      "fileSize": 43229227,
+      "type": "video"
+    },
+    {
+      "name": "4K修复周杰伦 - 你听得到MV 2160P修复版",
+      "file": "music/学习/4K修复周杰伦 - 你听得到MV 2160P修复版.mp4",
+      "duration": "未知",
+      "format": "mp4",
+      "fileSize": 44300800,
       "type": "video"
     },
     {
@@ -218,6 +274,14 @@
       "format": "mp3",
       "fileSize": 2007893,
       "type": "audio"
+    },
+    {
+      "name": "那时的晚风一定很温柔   夏夜神曲 Episode33She her her hers",
+      "file": "music/学习/那时的晚风一定很温柔   夏夜神曲 Episode33She her her hers.mp4",
+      "duration": "未知",
+      "format": "mp4",
+      "fileSize": 95833116,
+      "type": "video"
     },
     {
       "name": "你怎么连话都说不清楚(Live)-周杰伦",
@@ -305,14 +369,6 @@
       "duration": "未知",
       "format": "mp4",
       "fileSize": 12405657,
-      "type": "video"
-    },
-    {
-      "name": "夏日神曲限时返场Episode 33 - She Her Her Hers",
-      "file": "music/学习/夏日神曲限时返场Episode 33 - She Her Her Hers.mp4",
-      "duration": "未知",
-      "format": "mp4",
-      "fileSize": 10573416,
       "type": "video"
     },
     {
@@ -1063,8 +1119,8 @@
     }
   ],
   "summary": {
-    "studyCount": 84,
+    "studyCount": 91,
     "restCount": 48,
-    "totalCount": 132
+    "totalCount": 139
   }
 }
