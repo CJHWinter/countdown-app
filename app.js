@@ -117,6 +117,52 @@ class CountdownApp {
                 category: 'festival',
                 description: '粉色、绿色与黄色，如彩蛋般缤纷',
                 previewColor: 'linear-gradient(135deg, #FF69B4 0%, #98FB98 100%)'
+            },
+            // 新增炫酷主题
+<<<<<<< Updated upstream
+<<<<<<< Updated upstream
+<<<<<<< Updated upstream
+=======
+=======
+>>>>>>> Stashed changes
+=======
+>>>>>>> Stashed changes
+            'neon': {
+                name: '霓虹炫彩',
+                category: 'normal',
+                description: '充满未来感的霓虹色彩，炫酷动感',
+                previewColor: 'linear-gradient(135deg, #00ffff 0%, #ff00ff 100%)'
+            },
+            'cyberpunk': {
+                name: '赛博朋克',
+                category: 'normal',
+                description: '科技感十足的赛博朋克风格，未来都市',
+                previewColor: 'linear-gradient(135deg, #ff006e 0%, #00ffcc 100%)'
+            },
+            'aurora': {
+                name: '极光梦幻',
+                category: 'normal',
+                description: '如梦如幻的极光色彩，神秘浪漫',
+                previewColor: 'linear-gradient(135deg, #00ffaa 0%, #00ccff 50%, #00ffea 100%)'
+            },
+            'cosmic': {
+                name: '星云宇宙',
+                category: 'normal',
+                description: '浩瀚宇宙的星云色彩，深邃神秘',
+                previewColor: 'linear-gradient(135deg, #bb86fc 0%, #03dac6 50%, #00bbff 100%)'
+            },
+<<<<<<< Updated upstream
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
+>>>>>>> Stashed changes
+=======
+>>>>>>> Stashed changes
+            'metal': {
+                name: '金属质感',
+                category: 'normal',
+                description: '高端大气的金属质感，现代工业风',
+                previewColor: 'linear-gradient(135deg, #c0c0c0 0%, #a9a9a9 50%, #d3d3d3 100%)'
             }
         };
         

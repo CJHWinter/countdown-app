@@ -128,37 +128,79 @@
 
 /* 温暖日落主题 */
 [data-theme="warm"] {
-  --bg-primary: #1a0f0a;
-  --bg-secondary: #2d1f1a;
-  --bg-tertiary: #3d2f2a;
-  --bg-card: rgba(45, 31, 26, 0.8);
-  --bg-modal: rgba(26, 15, 10, 0.9);
-  
-  --text-primary: #ffe4b5;
-  --text-secondary: #deb887;
-  --text-muted: #cd853f;
-  
-  --accent-primary: #ff7f50;
+  --bg-primary: #2c1a0a;
+  --bg-secondary: #3d2b1a;
+  --bg-tertiary: #4d3b2a;
+  --bg-card: rgba(61, 43, 26, 0.85);
+  --bg-modal: rgba(44, 26, 10, 0.95);
+
+  --text-primary: #ffebcd;
+  --text-secondary: #f5deb3;
+  --text-muted: #d2b48c;
+
+  --accent-primary: #ff8c00;
   --accent-secondary: #ff4500;
   --accent-success: #ffa500;
   --accent-warning: #ffd700;
-  --accent-danger: #dc143c;
-  
-  --gradient-primary: linear-gradient(135deg, #ff7f50 0%, #ff4500 100%);
-  --gradient-neon: linear-gradient(135deg, #ff7f50 0%, #ff6347 50%, #ff4500 100%);
-  --gradient-countdown: linear-gradient(135deg, #ff4500 0%, #dc143c 100%);
-  --gradient-exam: linear-gradient(135deg, #ff7f50 0%, #ff6347 50%, #ff1493 100%);
-  
-  --border-primary: rgba(255, 127, 80, 0.4);
-  --border-secondary: rgba(255, 228, 181, 0.2);
-  
-  --shadow-glow: 0 0 25px rgba(255, 127, 80, 0.4);
-  --shadow-card: 0 8px 32px rgba(26, 15, 10, 0.4);
-  --shadow-neon: 0 0 35px rgba(255, 127, 80, 0.6);
-  
-  --particle-color-1: rgba(255, 127, 80, 0.15);
-  --particle-color-2: rgba(255, 69, 0, 0.15);
-  --particle-color-3: rgba(255, 99, 71, 0.15);
+  --accent-danger: #ff6347;
+
+  --gradient-primary: linear-gradient(135deg, #ff8c00 0%, #ff4500 50%, #ff1493 100%);
+  --gradient-neon: linear-gradient(135deg, #ff8c00 0%, #ffa500 50%, #ff4500 100%);
+  --gradient-countdown: linear-gradient(135deg, #ff4500 0%, #ff6347 50%, #ff1493 100%);
+  --gradient-exam: linear-gradient(135deg, #ff8c00 0%, #ffa500 50%, #ff6347 100%);
+
+  --border-primary: rgba(255, 140, 0, 0.6);
+  --border-secondary: rgba(255, 235, 205, 0.3);
+
+  --shadow-glow: 0 0 35px rgba(255, 140, 0, 0.7);
+  --shadow-card: 0 8px 32px rgba(44, 26, 10, 0.6);
+  --shadow-neon: 0 0 45px rgba(255, 140, 0, 0.9);
+
+  --particle-color-1: rgba(255, 140, 0, 0.3);
+  --particle-color-2: rgba(255, 69, 0, 0.3);
+  --particle-color-3: rgba(255, 165, 0, 0.3);
+}
+
+/* 温暖日落 - 夕阳背景 */
+[data-theme="warm"] body {
+  background-image:
+    radial-gradient(circle at 70% 30%, rgba(255, 140, 0, 0.2) 0%, transparent 40%),
+    radial-gradient(circle at 30% 70%, rgba(255, 69, 0, 0.2) 0%, transparent 40%),
+    linear-gradient(135deg, #2c1a0a 0%, #3d2b1a 50%, #ff8c00 100%);
+}
+
+/* 温暖日落 - 夕阳光辉 */
+[data-theme="warm"] body::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image:
+    url("data:image/svg+xml,%3Csvg width='300' height='300' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='200' cy='100' r='80' fill='%23ff8c00' opacity='0.2'/%3E%3Ccircle cx='200' cy='100' r='60' fill='%23ff4500' opacity='0.15'/%3E%3C/svg%3E");
+  background-size: 400px 400px;
+  background-position: 70% 20%;
+  animation: sunsetGlow 12s ease-in-out infinite alternate;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* 温暖日落 - 飞鸟剪影 */
+[data-theme="warm"] body::after {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image:
+    url("data:image/svg+xml,%3Csvg width='200' height='100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M20 50 Q40 45 60 50 Q80 55 100 50 Q120 45 140 50 Q160 55 180 50' stroke='%232c1a0a' stroke-width='2' fill='none' opacity='0.4'/%3E%3C/svg%3E");
+  background-size: 300px 150px;
+  background-position: center bottom;
+  animation: birdsFly 20s linear infinite;
+  pointer-events: none;
+  z-index: 0;
 }
 
 /* 森林绿意主题 */
@@ -627,32 +669,418 @@
   --bg-tertiary: #F0E68C;
   --bg-card: rgba(255, 228, 225, 0.9);
   --bg-modal: rgba(255, 248, 220, 0.95);
-  
+
   --text-primary: #8B008B;
   --text-secondary: #9370DB;
   --text-muted: #BA55D3;
-  
+
   --accent-primary: #FF69B4;
   --accent-secondary: #98FB98;
   --accent-success: #32CD32;
   --accent-warning: #FFD700;
   --accent-danger: #FF6347;
-  
+
   --gradient-primary: linear-gradient(135deg, #FF69B4 0%, #98FB98 100%);
   --gradient-neon: linear-gradient(135deg, #FF69B4 0%, #FFD700 50%, #98FB98 100%);
   --gradient-countdown: linear-gradient(135deg, #98FB98 0%, #32CD32 100%);
   --gradient-exam: linear-gradient(135deg, #FF69B4 0%, #FFD700 50%, #9370db 100%);
-  
+
   --border-primary: rgba(255, 105, 180, 0.5);
   --border-secondary: rgba(152, 251, 152, 0.3);
-  
+
   --shadow-glow: 0 0 30px rgba(255, 105, 180, 0.4);
   --shadow-card: 0 8px 32px rgba(255, 248, 220, 0.3);
   --shadow-neon: 0 0 40px rgba(255, 105, 180, 0.6);
-  
+
   --particle-color-1: rgba(255, 105, 180, 0.2);
   --particle-color-2: rgba(152, 251, 152, 0.2);
   --particle-color-3: rgba(255, 215, 0, 0.2);
+}
+
+/* ================================
+   炫酷新主题
+   ================================ */
+
+/* 霓虹炫彩主题 */
+[data-theme="neon"] {
+  --bg-primary: #0f0c29;
+  --bg-secondary: #302b63;
+  --bg-tertiary: #24243e;
+  --bg-card: rgba(48, 43, 99, 0.85);
+  --bg-modal: rgba(15, 12, 41, 0.95);
+
+  --text-primary: #ffffff;
+  --text-secondary: #e0e0ff;
+  --text-muted: #a0a0ff;
+
+  --accent-primary: #00ffff;
+  --accent-secondary: #ff00ff;
+  --accent-success: #00ff9d;
+  --accent-warning: #ffcc00;
+  --accent-danger: #ff3860;
+
+  --gradient-primary: linear-gradient(135deg, #00ffff 0%, #ff00ff 100%);
+  --gradient-neon: linear-gradient(135deg, #00ffff 0%, #ff00ff 50%, #00ff9d 100%);
+  --gradient-countdown: linear-gradient(135deg, #ff00ff 0%, #ff3860 100%);
+  --gradient-exam: linear-gradient(135deg, #00ffff 0%, #ffcc00 50%, #00ff9d 100%);
+
+  --border-primary: rgba(0, 255, 255, 0.6);
+  --border-secondary: rgba(255, 0, 255, 0.4);
+
+  --shadow-glow: 0 0 35px rgba(0, 255, 255, 0.7);
+  --shadow-card: 0 8px 32px rgba(15, 12, 41, 0.6);
+  --shadow-neon: 0 0 45px rgba(0, 255, 255, 0.9);
+
+  --particle-color-1: rgba(0, 255, 255, 0.3);
+  --particle-color-2: rgba(255, 0, 255, 0.3);
+  --particle-color-3: rgba(0, 255, 157, 0.3);
+}
+
+/* 节日主题背景和装饰 */
+[data-theme="neon"] body {
+  background-image:
+    radial-gradient(circle at 20% 30%, rgba(0, 255, 255, 0.15) 0%, transparent 50%),
+    radial-gradient(circle at 80% 70%, rgba(255, 0, 255, 0.15) 0%, transparent 50%),
+    linear-gradient(135deg, #0f0c29 0%, #302b63 100%);
+}
+
+/* 霓虹炫彩 - 光晕效果 */
+[data-theme="neon"] body::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image:
+    url("data:image/svg+xml,%3Csvg width='100' height='100' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='50' cy='50' r='40' fill='%2300ffff' opacity='0.2'/%3E%3Ccircle cx='50' cy='50' r='30' fill='%23ff00ff' opacity='0.2'/%3E%3Ccircle cx='50' cy='50' r='20' fill='%2300ff9d' opacity='0.2'/%3E%3C/svg%3E");
+  background-size: 200px 200px;
+  background-position: 10% 10%;
+  animation: floatStars 20s ease-in-out infinite;
+  pointer-events: none;
+  z-index: 0;
+}
+
+[data-theme="neon"] body::after {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image:
+    url("data:image/svg+xml,%3Csvg width='150' height='150' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M75 0 L90 60 L150 75 L90 90 L75 150 L60 90 L0 75 L60 60 Z' stroke='%2300ffff' stroke-width='2' fill='none' opacity='0.3'/%3E%3C/svg%3E");
+  background-size: 300px 300px;
+  background-position: 75% 20%;
+  animation: rotateShapes 30s linear infinite;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* 赛博朋克主题 */
+[data-theme="cyberpunk"] {
+  --bg-primary: #000000;
+  --bg-secondary: #1a1a2e;
+  --bg-tertiary: #16213e;
+  --bg-card: rgba(26, 26, 46, 0.9);
+  --bg-modal: rgba(0, 0, 0, 0.95);
+
+  --text-primary: #00ffcc;
+  --text-secondary: #ff00ff;
+  --text-muted: #6666ff;
+
+  --accent-primary: #ff006e;
+  --accent-secondary: #00ffcc;
+  --accent-success: #00ff9d;
+  --accent-warning: #ffcc00;
+  --accent-danger: #ff3860;
+
+  --gradient-primary: linear-gradient(135deg, #ff006e 0%, #00ffcc 100%);
+  --gradient-neon: linear-gradient(135deg, #ff006e 0%, #ff00ff 50%, #00ffcc 100%);
+  --gradient-countdown: linear-gradient(135deg, #ff00ff 0%, #ff006e 100%);
+  --gradient-exam: linear-gradient(135deg, #ff006e 0%, #00ffcc 50%, #ffcc00 100%);
+
+  --border-primary: rgba(255, 0, 110, 0.7);
+  --border-secondary: rgba(0, 255, 204, 0.5);
+
+  --shadow-glow: 0 0 40px rgba(255, 0, 110, 0.8);
+  --shadow-card: 0 8px 32px rgba(0, 0, 0, 0.7);
+  --shadow-neon: 0 0 50px rgba(255, 0, 110, 1);
+
+  --particle-color-1: rgba(255, 0, 110, 0.4);
+  --particle-color-2: rgba(0, 255, 204, 0.4);
+  --particle-color-3: rgba(255, 0, 255, 0.4);
+}
+
+/* 赛博朋克 - 城市夜景背景 */
+[data-theme="cyberpunk"] body {
+  background-image:
+    linear-gradient(rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.9)),
+    repeating-linear-gradient(0deg, rgba(0, 255, 204, 0.1) 0px, rgba(0, 255, 204, 0.1) 1px, transparent 1px, transparent 20px),
+    repeating-linear-gradient(90deg, rgba(255, 0, 110, 0.1) 0px, rgba(255, 0, 110, 0.1) 1px, transparent 1px, transparent 20px),
+    linear-gradient(135deg, #000000 0%, #1a1a2e 100%);
+}
+
+/* 赛博朋克 - 建筑轮廓 */
+[data-theme="cyberpunk"] body::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image:
+    url("data:image/svg+xml,%3Csvg width='200' height='400' xmlns='http://www.w3.org/2000/svg'%3E%3Crect x='20' y='100' width='30' height='300' fill='%231a1a2e' stroke='%23ff006e' stroke-width='1' opacity='0.6'/%3E%3Crect x='60' y='150' width='40' height='250' fill='%231a1a2e' stroke='%2300ffcc' stroke-width='1' opacity='0.6'/%3E%3Crect x='120' y='80' width='35' height='320' fill='%231a1a2e' stroke='%23ff00ff' stroke-width='1' opacity='0.6'/%3E%3Crect x='170' y='120' width='25' height='280' fill='%231a1a2e' stroke='%23ffcc00' stroke-width='1' opacity='0.6'/%3E%3C/svg%3E");
+  background-size: 300px 500px;
+  background-position: center bottom;
+  animation: cityScroll 40s linear infinite;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* 赛博朋克 - 数据流效果 */
+[data-theme="cyberpunk"] body::after {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image:
+    url("data:image/svg+xml,%3Csvg width='20' height='20' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 0 L20 20 M20 0 L0 20' stroke='%2300ffcc' stroke-width='0.5' opacity='0.3'/%3E%3C/svg%3E");
+  background-size: 40px 40px;
+  animation: dataStream 5s linear infinite;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* 极光梦幻主题 */
+[data-theme="aurora"] {
+  --bg-primary: #0c0c1d;
+  --bg-secondary: #1a1a2e;
+  --bg-tertiary: #1f1f3d;
+  --bg-card: rgba(26, 26, 46, 0.85);
+  --bg-modal: rgba(12, 12, 29, 0.95);
+
+  --text-primary: #e0e0ff;
+  --text-secondary: #a0a0ff;
+  --text-muted: #7070cc;
+
+  --accent-primary: #00ffaa;
+  --accent-secondary: #00ccff;
+  --accent-success: #00ffea;
+  --accent-warning: #aaff00;
+  --accent-danger: #ff55aa;
+
+  --gradient-primary: linear-gradient(135deg, #00ffaa 0%, #00ccff 50%, #00ffea 100%);
+  --gradient-neon: linear-gradient(135deg, #00ffaa 0%, #aaff00 50%, #00ccff 100%);
+  --gradient-countdown: linear-gradient(135deg, #00ccff 0%, #00ffaa 100%);
+  --gradient-exam: linear-gradient(135deg, #00ffaa 0%, #00ffea 50%, #aaff00 100%);
+
+  --border-primary: rgba(0, 255, 170, 0.5);
+  --border-secondary: rgba(0, 204, 255, 0.4);
+
+  --shadow-glow: 0 0 35px rgba(0, 255, 170, 0.6);
+  --shadow-card: 0 8px 32px rgba(12, 12, 29, 0.6);
+  --shadow-neon: 0 0 45px rgba(0, 255, 170, 0.8);
+
+  --particle-color-1: rgba(0, 255, 170, 0.25);
+  --particle-color-2: rgba(0, 204, 255, 0.25);
+  --particle-color-3: rgba(0, 255, 234, 0.25);
+}
+
+/* 极光梦幻 - 极光背景 */
+[data-theme="aurora"] body {
+  background-image:
+    radial-gradient(ellipse at top, rgba(0, 255, 170, 0.1) 0%, transparent 40%),
+    radial-gradient(ellipse at bottom, rgba(0, 204, 255, 0.1) 0%, transparent 40%),
+    radial-gradient(circle at 20% 80%, rgba(0, 255, 234, 0.1) 0%, transparent 30%),
+    linear-gradient(135deg, #0c0c1d 0%, #1a1a2e 100%);
+}
+
+/* 极光梦幻 - 流动极光 */
+[data-theme="aurora"] body::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image:
+    url("data:image/svg+xml,%3Csvg width='300' height='100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 50 Q75 30 150 50 T300 50' stroke='%2300ffaa' stroke-width='2' fill='none' opacity='0.3'/%3E%3Cpath d='M0 70 Q75 50 150 70 T300 70' stroke='%2300ccff' stroke-width='2' fill='none' opacity='0.3'/%3E%3C/svg%3E");
+  background-size: 600px 200px;
+  background-position: center top;
+  animation: auroraFlow 15s ease-in-out infinite alternate;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* 极光梦幻 - 星光点缀 */
+[data-theme="aurora"] body::after {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image:
+    url("data:image/svg+xml,%3Csvg width='100' height='100' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='10' cy='10' r='1' fill='%23ffffff' opacity='0.6'/%3E%3Ccircle cx='50' cy='30' r='1.5' fill='%23a0a0ff' opacity='0.5'/%3E%3Ccircle cx='80' cy='70' r='1' fill='%2300ffaa' opacity='0.4'/%3E%3Ccircle cx='20' cy='90' r='1.2' fill='%2300ccff' opacity='0.5'/%3E%3Ccircle cx='90' cy='20' r='1.3' fill='%2300ffea' opacity='0.4'/%3E%3C/svg%3E");
+  background-size: 200px 200px;
+  animation: twinkleStars 8s ease-in-out infinite;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* 星云宇宙主题 */
+[data-theme="cosmic"] {
+  --bg-primary: #0a0a1a;
+  --bg-secondary: #16162a;
+  --bg-tertiary: #1f1f3a;
+  --bg-card: rgba(22, 22, 42, 0.85);
+  --bg-modal: rgba(10, 10, 26, 0.95);
+
+  --text-primary: #e0e0ff;
+  --text-secondary: #a0a0ff;
+  --text-muted: #7070cc;
+
+  --accent-primary: #bb86fc;
+  --accent-secondary: #03dac6;
+  --accent-success: #cf6679;
+  --accent-warning: #ffa000;
+  --accent-danger: #cf6679;
+
+  --gradient-primary: linear-gradient(135deg, #bb86fc 0%, #03dac6 50%, #00bbff 100%);
+  --gradient-neon: linear-gradient(135deg, #bb86fc 0%, #00bbff 50%, #03dac6 100%);
+  --gradient-countdown: linear-gradient(135deg, #03dac6 0%, #bb86fc 100%);
+  --gradient-exam: linear-gradient(135deg, #bb86fc 0%, #00bbff 50%, #cf6679 100%);
+
+  --border-primary: rgba(187, 134, 252, 0.5);
+  --border-secondary: rgba(3, 218, 198, 0.4);
+
+  --shadow-glow: 0 0 40px rgba(187, 134, 252, 0.6);
+  --shadow-card: 0 8px 32px rgba(10, 10, 26, 0.7);
+  --shadow-neon: 0 0 50px rgba(187, 134, 252, 0.8);
+
+  --particle-color-1: rgba(187, 134, 252, 0.3);
+  --particle-color-2: rgba(3, 218, 198, 0.3);
+  --particle-color-3: rgba(0, 187, 255, 0.3);
+}
+
+/* 星云宇宙 - 星空背景 */
+[data-theme="cosmic"] body {
+  background-image:
+    radial-gradient(circle at 10% 20%, rgba(187, 134, 252, 0.15) 0%, transparent 25%),
+    radial-gradient(circle at 90% 80%, rgba(0, 187, 255, 0.15) 0%, transparent 25%),
+    radial-gradient(circle at 50% 50%, rgba(3, 218, 198, 0.1) 0%, transparent 30%),
+    linear-gradient(135deg, #0a0a1a 0%, #16162a 100%);
+}
+
+/* 星云宇宙 - 星云效果 */
+[data-theme="cosmic"] body::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image:
+    url("data:image/svg+xml,%3Csvg width='400' height='400' xmlns='http://www.w3.org/2000/svg'%3E%3Cellipse cx='100' cy='100' rx='80' ry='50' fill='%23bb86fc' opacity='0.15'/%3E%3Cellipse cx='300' cy='300' rx='60' ry='40' fill='%2303dac6' opacity='0.15'/%3E%3Cellipse cx='200' cy='150' rx='70' ry='45' fill='%2300bbff' opacity='0.15'/%3E%3C/svg%3E");
+  background-size: 600px 600px;
+  animation: nebulaFloat 30s ease-in-out infinite alternate;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* 星云宇宙 - 流星效果 */
+[data-theme="cosmic"] body::after {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image:
+    url("data:image/svg+xml,%3Csvg width='200' height='200' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M10 10 L30 12' stroke='%23ffffff' stroke-width='1' opacity='0.7'/%3E%3Cpath d='M150 180 L170 182' stroke='%23bb86fc' stroke-width='1' opacity='0.6'/%3E%3C/svg%3E");
+  background-size: 300px 300px;
+  animation: meteorShower 20s linear infinite;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* 金属质感主题 */
+[data-theme="metal"] {
+  --bg-primary: #121212;
+  --bg-secondary: #1e1e1e;
+  --bg-tertiary: #2a2a2a;
+  --bg-card: rgba(30, 30, 30, 0.9);
+  --bg-modal: rgba(18, 18, 18, 0.95);
+
+  --text-primary: #e0e0e0;
+  --text-secondary: #a0a0a0;
+  --text-muted: #707070;
+
+  --accent-primary: #c0c0c0;
+  --accent-secondary: #a9a9a9;
+  --accent-success: #d3d3d3;
+  --accent-warning: #dcdcdc;
+  --accent-danger: #c0c0c0;
+
+  --gradient-primary: linear-gradient(135deg, #c0c0c0 0%, #a9a9a9 50%, #d3d3d3 100%);
+  --gradient-neon: linear-gradient(135deg, #c0c0c0 0%, #dcdcdc 50%, #a9a9a9 100%);
+  --gradient-countdown: linear-gradient(135deg, #a9a9a9 0%, #c0c0c0 100%);
+  --gradient-exam: linear-gradient(135deg, #c0c0c0 0%, #d3d3d3 50%, #dcdcdc 100%);
+
+  --border-primary: rgba(192, 192, 192, 0.6);
+  --border-secondary: rgba(169, 169, 169, 0.5);
+
+  --shadow-glow: 0 0 30px rgba(192, 192, 192, 0.5);
+  --shadow-card: 0 8px 32px rgba(18, 18, 18, 0.8);
+  --shadow-neon: 0 0 40px rgba(192, 192, 192, 0.7);
+
+  --particle-color-1: rgba(192, 192, 192, 0.2);
+  --particle-color-2: rgba(169, 169, 169, 0.2);
+  --particle-color-3: rgba(211, 211, 211, 0.2);
+}
+
+/* 金属质感 - 金属拉丝背景 */
+[data-theme="metal"] body {
+  background-image:
+    linear-gradient(rgba(18, 18, 18, 0.9), rgba(18, 18, 18, 0.95)),
+    linear-gradient(90deg, rgba(192, 192, 192, 0.05) 1px, transparent 1px),
+    linear-gradient(rgba(192, 192, 192, 0.05) 1px, transparent 1px),
+    linear-gradient(135deg, #121212 0%, #1e1e1e 100%);
+  background-size: 100% 100%, 20px 20px, 20px 20px, 100% 100%;
+}
+
+/* 金属质感 - 反光效果 */
+[data-theme="metal"] body::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image:
+    url("data:image/svg+xml,%3Csvg width='200' height='200' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 0 L200 200' stroke='%23c0c0c0' stroke-width='0.5' opacity='0.1'/%3E%3Cpath d='M200 0 L0 200' stroke='%23a9a9a9' stroke-width='0.5' opacity='0.1'/%3E%3C/svg%3E");
+  background-size: 300px 300px;
+  animation: metalShine 10s ease-in-out infinite alternate;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* 金属质感 - 高光效果 */
+[data-theme="metal"] body::after {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image:
+    radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.1) 0%, transparent 40%),
+    radial-gradient(circle at 70% 70%, rgba(255, 255, 255, 0.05) 0%, transparent 30%);
+  pointer-events: none;
+  z-index: 0;
 }
 
 /* ================================
@@ -6069,6 +6497,110 @@ body {
   }
 }
 
+/* 新主题动画 */
+@keyframes floatStars {
+  0% {
+    transform: translateY(0) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-20px) rotate(180deg);
+  }
+  100% {
+    transform: translateY(0) rotate(360deg);
+  }
+}
+
+@keyframes rotateShapes {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes cityScroll {
+  0% {
+    background-position: center bottom;
+  }
+  100% {
+    background-position: center top;
+  }
+}
+
+@keyframes dataStream {
+  0% {
+    transform: translateY(-20px);
+  }
+  100% {
+    transform: translateY(20px);
+  }
+}
+
+@keyframes auroraFlow {
+  0% {
+    background-position: center top;
+    opacity: 0.3;
+  }
+  50% {
+    opacity: 0.6;
+  }
+  100% {
+    background-position: center bottom;
+    opacity: 0.3;
+  }
+}
+
+@keyframes twinkleStars {
+  0%, 100% {
+    opacity: 0.3;
+  }
+  50% {
+    opacity: 0.8;
+  }
+}
+
+@keyframes nebulaFloat {
+  0% {
+    transform: translate(0, 0) scale(1);
+  }
+  25% {
+    transform: translate(20px, 10px) scale(1.05);
+  }
+  50% {
+    transform: translate(40px, 30px) scale(0.95);
+  }
+  75% {
+    transform: translate(20px, 50px) scale(1.1);
+  }
+  100% {
+    transform: translate(0, 60px) scale(1);
+  }
+}
+
+@keyframes meteorShower {
+  0% {
+    background-position: 0 0;
+  }
+  100% {
+    background-position: 300px 300px;
+  }
+}
+
+@keyframes metalShine {
+  0% {
+    background-position: 0 0;
+    opacity: 0.1;
+  }
+  50% {
+    opacity: 0.3;
+  }
+  100% {
+    background-position: 300px 300px;
+    opacity: 0.1;
+  }
+}
+
 /* 响应式设计 */
 @media (max-width: 768px) {
   .downloader-modal-content {
@@ -6292,17 +6824,132 @@ body {
   gap: var(--spacing-md);
 }
 
+/* 金属质感主题 */
+[data-theme="metal"] {
+  --bg-primary: #1a1a1a;
+  --bg-secondary: #2a2a2a;
+  --bg-tertiary: #3a3a3a;
+  --bg-card: rgba(42, 42, 42, 0.9);
+  --bg-modal: rgba(26, 26, 26, 0.95);
+
+  --text-primary: #f0f0f0;
+  --text-secondary: #d0d0d0;
+  --text-muted: #a0a0a0;
+
+  --accent-primary: #c0c0c0;
+  --accent-secondary: #a9a9a9;
+  --accent-success: #d3d3d3;
+  --accent-warning: #dcdcdc;
+  --accent-danger: #c0c0c0;
+
+  --gradient-primary: linear-gradient(135deg, #c0c0c0 0%, #a9a9a9 50%, #d3d3d3 100%);
+  --gradient-neon: linear-gradient(135deg, #c0c0c0 0%, #dcdcdc 50%, #a9a9a9 100%);
+  --gradient-countdown: linear-gradient(135deg, #a9a9a9 0%, #c0c0c0 100%);
+  --gradient-exam: linear-gradient(135deg, #c0c0c0 0%, #d3d3d3 50%, #dcdcdc 100%);
+
+  --border-primary: rgba(192, 192, 192, 0.7);
+  --border-secondary: rgba(169, 169, 169, 0.5);
+
+  --shadow-glow: 0 0 40px rgba(192, 192, 192, 0.7);
+  --shadow-card: 0 8px 32px rgba(0, 0, 0, 0.8);
+  --shadow-neon: 0 0 50px rgba(192, 192, 192, 0.9);
+
+  --particle-color-1: rgba(192, 192, 192, 0.3);
+  --particle-color-2: rgba(169, 169, 169, 0.3);
+  --particle-color-3: rgba(211, 211, 211, 0.3);
+}
+
+/* 金属质感 - 金属拉丝背景 */
+[data-theme="metal"] body {
+  background-image:
+    linear-gradient(rgba(26, 26, 26, 0.95), rgba(26, 26, 26, 0.9)),
+    repeating-linear-gradient(90deg, rgba(192, 192, 192, 0.1) 0px, rgba(192, 192, 192, 0.1) 1px, transparent 1px, transparent 20px),
+    repeating-linear-gradient(0deg, rgba(169, 169, 169, 0.1) 0px, rgba(169, 169, 169, 0.1) 1px, transparent 1px, transparent 20px),
+    linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%);
+  background-size: 100% 100%, 30px 30px, 30px 30px, 100% 100%;
+}
+
+/* 金属质感 - 动态金属光泽 */
+[data-theme="metal"] body::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image:
+    url("data:image/svg+xml,%3Csvg width='200' height='200' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 0 L200 200 M200 0 L0 200' stroke='%23c0c0c0' stroke-width='1' opacity='0.15'/%3E%3Ccircle cx='50' cy='50' r='30' fill='%23c0c0c0' opacity='0.1'/%3E%3Ccircle cx='150' cy='150' r='20' fill='%23a9a9a9' opacity='0.1'/%3E%3C/svg%3E");
+  background-size: 400px 400px;
+  animation: metalShine 8s ease-in-out infinite alternate;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* 金属质感 - 高光反射效果 */
+[data-theme="metal"] body::after {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image:
+    radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.2) 0%, transparent 40%),
+    radial-gradient(circle at 70% 70%, rgba(255, 255, 255, 0.15) 0%, transparent 30%),
+    linear-gradient(45deg, rgba(192, 192, 192, 0.1) 25%, transparent 25%, transparent 75%, rgba(169, 169, 169, 0.1) 75%);
+  background-size: 300px 300px, 200px 200px, 50px 50px;
+  animation: metalGlow 12s ease-in-out infinite alternate;
+  pointer-events: none;
+  z-index: 0;
+}
+
 /* 响应式 */
 @media (max-width: 768px) {
   .charts-grid {
     grid-template-columns: 1fr;
   }
-  
+
   .stats-cards {
     grid-template-columns: repeat(2, 1fr);
   }
-  
+
   .chart-container {
     height: 250px;
+  }
+}
+
+/* 金属主题动画 */
+@keyframes metalShine {
+  0% {
+    background-position: 0 0;
+    opacity: 0.1;
+  }
+  50% {
+    opacity: 0.3;
+  }
+  100% {
+    background-position: 300px 300px;
+    opacity: 0.1;
+  }
+}
+
+@keyframes metalGlow {
+  0% {
+    background-position: 0 0;
+    opacity: 0.2;
+  }
+  25% {
+    opacity: 0.3;
+  }
+  50% {
+    background-position: 100px 100px;
+    opacity: 0.4;
+  }
+  75% {
+    opacity: 0.3;
+  }
+  100% {
+    background-position: 200px 200px;
+    opacity: 0.2;
   }
 }
