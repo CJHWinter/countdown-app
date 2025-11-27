@@ -100,7 +100,7 @@
 #### 方式一：从 GitHub 下载
 ```bash
 # 克隆仓库
-git clone https://github.com/CJHWinter/countdown-app.git
+git clone https://github.com/ArthurCodings/countdown-app.git
 cd countdown-app
 ```
 
