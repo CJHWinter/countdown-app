@@ -313,8 +313,12 @@ class BilibiliDownloader:
                 with yt_dlp.YoutubeDL({'quiet': True, 'proxy': ''}) as temp_ydl:
                     info = temp_ydl.extract_info(url, download=False)
                     video_title = info.get('title', video_title)
-                    # 清理文件名中的特殊字符
-                    video_title = "".join(c for c in video_title if c.isalnum() or c in (' ', '-', '_')).rstrip()
+                    # 只清理Windows不允许的文件名字符
+                    invalid_chars = '<>:"/\\|?*'
+                    video_title = ''.join(c for c in video_title if c not in invalid_chars)
+                    # 限制文件名长度(Windows限制255字符)
+                    if len(video_title) > 200:
+                        video_title = video_title[:200]
             except:
                 pass
 
