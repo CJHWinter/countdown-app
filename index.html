@@ -425,16 +425,16 @@
                     
                     <!-- 倒计时显示区域 -->
                     <div class="custom-countdown-display hidden" id="customCountdownDisplay">
-                        <!-- 日期切换栏 -->
-                        <div class="custom-date-switcher" id="customDateSwitcher">
-                            <!-- 动态生成日期切换卡片 -->
-                                </div>
-                        
                         <div class="custom-header">
                             <h2 class="custom-title">
                                 <span class="custom-icon">🎯</span>
                                 <span id="customDateName">我的定制倒计时</span>
                                 <span class="custom-icon">💕</span>
+                                <!-- 返回按钮移动到标题右侧 -->
+                                <button class="custom-back-btn" id="customBackBtn">
+                                    <span>←</span>
+                                    <span>返回</span>
+                                </button>
                             </h2>
                             <div class="custom-date" id="customDateInfo">目标时间：--</div>
                             </div>
@@ -534,11 +534,10 @@
                                 </div>
                             </div>
                         
-                        <!-- 返回按钮 -->
-                        <button class="custom-back-btn" id="customBackBtn">
-                            <span>←</span>
-                            <span>返回</span>
-                        </button>
+                        <!-- 日期切换栏移动到里程碑下方 -->
+                        <div class="custom-date-switcher" id="customDateSwitcher">
+                            <!-- 动态生成日期切换卡片 -->
+                                </div>
                     </div>
                 </div>
             </section>
