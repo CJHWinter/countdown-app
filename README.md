@@ -157,6 +157,54 @@ cd ..
 - ✅ Flask、yt-dlp（B站下载器）
 - ✅ 其他必需依赖
 
+##### ⚠️ FFmpeg 下载说明（重要）
+
+安装依赖时会自动下载 FFmpeg（用于B站视频下载功能），但**从GitHub下载可能非常慢**（服务器在国外，文件约100MB）。
+
+**如果下载速度过慢或失败，请使用以下备用方案：**
+
+**方案一：百度网盘下载（推荐）**
+
+📥 **百度网盘链接**：
+- 链接: https://pan.baidu.com/s/1ptuUig6pjU6hSDupEjRJIw?pwd=1234
+- 提取码: 1234
+
+**操作步骤：**
+1. 访问上面的百度网盘链接，下载 `ffmpeg-master-latest-win64-gpl.zip`
+2. 将下载的 zip 文件复制到项目目录的 `crawl_videos\` 文件夹内
+3. 重新运行 `安装依赖.bat`，脚本会自动检测并解压
+4. 或者手动解压到 `crawl_videos\` 目录（解压后应为 `crawl_videos\ffmpeg-master-latest-win64-gpl\`）
+
+**方案二：手动解压**
+
+如果你已经有 FFmpeg 压缩包，只需：
+1. 将 `ffmpeg-master-latest-win64-gpl.zip` 放入 `crawl_videos\` 目录
+2. 运行安装脚本，选择手动解压选项
+3. 或手动解压到 `crawl_videos\` 目录
+
+**为什么必须解压到特定目录？**
+
+B站下载器在 `crawl_videos\app.py` 中**硬编码了 FFmpeg 路径**：
+```python
+ffmpeg_path = os.path.join(os.getcwd(), 'ffmpeg-master-latest-win64-gpl', 'bin', 'ffmpeg.exe')
+```
+
+因此 FFmpeg **必须**位于：`项目根目录\crawl_videos\ffmpeg-master-latest-win64-gpl\bin\ffmpeg.exe`
+
+**验证安装成功：**
+
+运行以下命令检查：
+```batch
+crawl_videos\ffmpeg-master-latest-win64-gpl\bin\ffmpeg.exe -version
+```
+
+如果显示版本信息，说明安装成功！
+
+**注意事项：**
+- FFmpeg 仅用于B站下载器功能，不影响倒计时核心功能
+- 如果不需要视频下载功能，可以跳过 FFmpeg 安装
+- 文件大小约100MB，需要约300MB磁盘空间解压
+
 #### 步骤2：启动应用
 
 **🌟 推荐方式一：一键启动（最简单）**
